@@ -1,0 +1,33 @@
+douban:
+  tags:
+    - 推理
+  max_pages: 1
+  sort: "R"
+  delay: 1
+
+rss:
+  feeds:
+    - name: "Guardian"
+      url: "https://www.theguardian.com/books/rss"
+  days: 7
+
+ai_filter:
+  enabled: false
+  filter_rss: true
+  filter_douban: false
+  batch_size: 4
+  provider: "openrouter"
+  api_key: "YOUR_OPENROUTER_API_KEY"
+  model: "openrouter/auto"
+
+report:
+  output_dir: "output"
+  title_prefix: "推理资讯周报"
+
+state:
+  path: "data/state.json"
+  max_entries_per_bucket: 100
+
+schedule:
+  day: "frday"  # 故意拼错，用于测试校验
+  time: "18:00"

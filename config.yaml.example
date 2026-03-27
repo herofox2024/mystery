@@ -1,0 +1,193 @@
+# 推理资讯周报 - 配置文件模板
+
+douban:
+  tags:
+    - 推理
+    - 悬疑
+    - 侦探小说
+    - 推理小说
+  max_pages: 3
+  sort: "R"
+  delay: 2
+
+rss:
+  # 当前 rss_feeds.py 只支持标准 RSS。
+  # 中文推理更适合接入“豆瓣豆列 / 中国作家网 / 出版社动态”等页面抓取器，
+  # 因此这里先清空，避免继续依赖国外泛图书 RSS。
+  # 第 2 步新增中文抓取器后，再把中文源接入主流程。
+  feeds: []
+  days: 7
+
+china_sources:
+  enabled: true
+  days: 21
+  timeout: 20
+  target_year: 2026
+  # 默认不再启用“推理2025”这类历史豆列，避免混入 2025 出版物。
+  # 如果后续找到 2026 年豆列，再把它加回 douban_doulists。
+  douban_doulists:
+    - name: "豆瓣豆列 / 即将（待）出版︱悬疑推理"
+      url: "https://www.douban.com/doulist/161480116/"
+      max_pages: 2
+  chinawriter_pages:
+    - name: "中国作家网 / 书汇"
+      url: "https://www.chinawriter.com.cn/404058/index.html"
+      max_items: 20
+
+ai_filter:
+  enabled: true
+  filter_rss: true
+  filter_douban: true
+  batch_size: 8
+  fail_closed: true
+  providers:
+    - provider: "openrouter"
+      api_key: ""
+      base_url: "https://openrouter.ai/api/v1"
+      model: "openrouter/auto"
+      timeout: 30
+      max_retries: 1
+
+    - provider: "deepseek"
+      api_key: ""
+      base_url: ""
+      model: "deepseek-chat"
+      timeout: 30
+      max_retries: 1
+
+    - provider: "qwen"
+      api_key: ""
+      base_url: ""
+      model: "qwen-plus"
+      timeout: 30
+      max_retries: 1
+
+    - provider: "doubao"
+      api_key: ""
+      base_url: ""
+      model: ""
+      endpoint_id: ""
+      timeout: 30
+      max_retries: 1
+
+    - provider: "openai"
+      api_key: ""
+      base_url: ""
+      model: "gpt-4.1-mini"
+      timeout: 30
+      max_retries: 1
+
+filter_rules:
+  target_year: 2026
+  min_rating: 0
+  min_rating_count: 20
+  exact_target_year_only: true
+  recent_months_window: 12
+  exclude_keywords:
+    - 研究
+    - 评论
+    - 论文
+    - 教材
+    - 漫画
+    - 绘本
+    - 纪实
+    - 案例
+  rss_include_keywords:
+    - 推理
+    - 悬疑
+    - 侦探
+    - 本格
+    - 犯罪小说
+    - 惊悚
+    - 间谍小说
+    - 法庭悬疑
+    - 社会派
+    - 诡计
+    - 密室
+    - 刑侦
+    - 警探
+    - 谋杀
+    - 凶案
+    - 嫌疑人
+    - 华文推理
+    - 国产推理
+    - 午夜文库
+    - 谜托邦
+    - 新星出版社
+    - 读客悬疑
+    - 紫焰
+    - mystery
+    - crime fiction
+    - detective
+    - thriller
+    - whodunit
+    - noir
+    - locked room
+    - serial killer
+    - spy fiction
+  rss_exclude_keywords:
+    - young adult
+    - romance
+    - poetry
+    - nonfiction
+    - memoir
+    - cookbook
+    - self-help
+    - science fiction
+    - fantasy
+    - children
+    - picture book
+    - 诗歌
+    - 传记
+    - 非虚构
+    - 散文
+    - 科幻
+    - 奇幻
+    - 童书
+    - 绘本
+    - 青春
+    - 言情
+    - 武侠
+    - 仙侠
+    - 玄幻
+    - 历史小说
+    - 官场
+    - 财经
+    - 经管
+    - 励志
+    - 心理学
+    - 育儿
+    - 食谱
+    - 漫改
+    - 影视化
+    - horror
+    - politics
+    - history
+    - essay
+    - poem
+    - 习近平
+    - 脱贫攻坚
+    - 互联网大会
+    - 现代化
+    - 复兴
+    - 经济文选
+    - 学习教育
+    - 座谈会
+  max_books_before_ai: 50
+  max_rss_before_ai: 30
+  top_books: 12
+  top_rss: 10
+  full_books: 30
+  full_rss: 20
+
+report:
+  output_dir: "output"
+  title_prefix: "推理资讯周报"
+
+state:
+  path: "data/state.json"
+  max_entries_per_bucket: 2000
+
+schedule:
+  day: "friday"
+  time: "18:00"

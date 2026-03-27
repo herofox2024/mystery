@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>md_check_2026-03-27</title>
+<style>
+  :root {
+    --bg: #f3efe7;
+    --panel: #fffdf8;
+    --ink: #1d2935;
+    --muted: #6c7782;
+    --line: #d8d0c3;
+    --accent: #8f2d1f;
+    --accent-soft: #f4e3db;
+    --badge-bg: #e5f1e8;
+    --badge-text: #23543d;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    color: var(--ink);
+    background:
+      radial-gradient(circle at top left, rgba(143, 45, 31, 0.08), transparent 28%),
+      linear-gradient(180deg, #f7f3eb 0%, var(--bg) 100%);
+    font-family: "Source Han Serif SC", "Noto Serif SC", "Microsoft YaHei", serif;
+    line-height: 1.75;
+  }
+  .page {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 32px 20px 56px;
+  }
+  .hero, .panel {
+    background: rgba(255, 253, 248, 0.94);
+    border: 1px solid rgba(216, 208, 195, 0.85);
+    border-radius: 20px;
+    box-shadow: 0 12px 40px rgba(35, 31, 26, 0.06);
+    backdrop-filter: blur(8px);
+  }
+  .hero {
+    padding: 28px 28px 22px;
+    margin-bottom: 20px;
+  }
+  h1 {
+    margin: 0 0 8px;
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1.15;
+    letter-spacing: 0.03em;
+  }
+  .meta {
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+  .panel {
+    padding: 22px 24px;
+    margin-bottom: 18px;
+  }
+  h2 {
+    margin: 0 0 14px;
+    font-size: 1.35rem;
+    color: var(--accent);
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  th, td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--line);
+    text-align: left;
+    vertical-align: top;
+  }
+  .book-card, .rss-item {
+    padding: 16px 0;
+    border-top: 1px solid var(--line);
+  }
+  .book-card:first-of-type, .rss-item:first-of-type {
+    border-top: none;
+    padding-top: 0;
+  }
+  .book-wrap {
+    display: grid;
+    grid-template-columns: 96px 1fr;
+    gap: 16px;
+  }
+  .cover {
+    width: 96px;
+    min-height: 128px;
+    object-fit: cover;
+    border-radius: 12px;
+    background: #ece5d9;
+  }
+  .book-title, .rss-title {
+    font-size: 1.08rem;
+    font-weight: 700;
+  }
+  a {
+    color: #16324f;
+    text-decoration: none;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+  .subtitle, .aux, .rss-meta {
+    color: var(--muted);
+    font-size: 0.92rem;
+  }
+  .badge {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 2px 9px;
+    border-radius: 999px;
+    background: var(--badge-bg);
+    color: var(--badge-text);
+    font-size: 0.78rem;
+    font-weight: 700;
+  }
+  .reason, .summary {
+    margin-top: 8px;
+    padding: 10px 12px;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    border-radius: 10px;
+  }
+  .empty {
+    color: var(--muted);
+  }
+  footer {
+    padding-top: 6px;
+    color: var(--muted);
+    font-size: 0.88rem;
+    text-align: center;
+  }
+  @media (max-width: 680px) {
+    .page { padding: 20px 14px 40px; }
+    .hero, .panel { padding: 18px; border-radius: 16px; }
+    .book-wrap { grid-template-columns: 1fr; }
+    .cover { width: 100%; max-width: 160px; }
+  }
+</style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <h1>md_check_2026-03-27</h1>
+      <div class="meta">生成时间：2026-03-27 08:41:18</div>
+    </section>
+
+    <section class="panel">
+      <h2>抓取统计</h2>
+      <table>
+        <tr><th>项目</th><th>数量</th></tr>
+        <tr><td>豆瓣原始抓取</td><td>1</td></tr>
+        <tr><td>豆瓣规则过滤后</td><td>1</td></tr>
+        <tr><td>豆瓣最终入选</td><td>1</td></tr>
+        <tr><td>RSS 原始抓取</td><td>1</td></tr>
+        <tr><td>RSS 规则过滤后</td><td>1</td></tr>
+        <tr><td>RSS 最终入选</td><td>1</td></tr>
+      </table>
+    </section>
+
+    <section class="panel">
+      <h2>本周精选新书（共 1 本）</h2>
+      <article class="book-card">
+        <div class="book-wrap">
+          <div>
+            <div class="book-title">
+              <a href="https://example.com/book" target="_blank" rel="noopener noreferrer">Sample Book</a>
+<span class="badge">本周新增</span>            </div>
+            <div class="aux">Author A / Press / 2026 / 8.2（321人评价） / 综合分 123.45</div>
+<div class="summary">Summary</div>          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="panel">
+      <h2>本周资讯精选（共 1 条）</h2>
+      <article class="rss-item">
+        <div class="rss-title"><a href="https://example.com/news" target="_blank" rel="noopener noreferrer">Sample News</a></div>
+        <div class="rss-meta">rss:sample · 2026-03-27 · 本周新增</div>
+<div class="summary">Summary</div>      </article>
+    </section>
+
+    <section class="panel">
+      <h2>新书完整清单（前 1 本）</h2>
+      <article class="rss-item">
+        <div class="rss-title"><a href="https://example.com/book" target="_blank" rel="noopener noreferrer">Sample Book</a></div>
+        <div class="rss-meta">2026 · 评分 8.2（321人评价） · 本周新增</div>
+      </article>
+    </section>
+
+    <section class="panel">
+      <h2>资讯完整清单（前 1 条）</h2>
+      <article class="rss-item">
+        <div class="rss-title"><a href="https://example.com/news" target="_blank" rel="noopener noreferrer">Sample News</a></div>
+        <div class="rss-meta">rss:sample · 2026-03-27 · 本周新增</div>
+      </article>
+    </section>
+
+    <footer>本周报由推理资讯周报工具自动生成</footer>
+  </main>
+</body>
+</html>

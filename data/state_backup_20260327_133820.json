@@ -1,0 +1,50 @@
+{
+  "books": {
+    "https://book.douban.com/subject/38391752/": {
+      "title": "東京結合人間",
+      "first_seen": "2026-03-27",
+      "last_seen": "2026-03-27"
+    },
+    "https://book.douban.com/subject/38236690/": {
+      "title": "解剖偵探",
+      "first_seen": "2026-03-27",
+      "last_seen": "2026-03-27"
+    },
+    "https://book.douban.com/subject/38229491/": {
+      "title": "翠鸟谋杀案",
+      "first_seen": "2026-03-27",
+      "last_seen": "2026-03-27"
+    },
+    "https://book.douban.com/subject/38224973/": {
+      "title": "或許是冬日的魔法",
+      "first_seen": "2026-03-27",
+      "last_seen": "2026-03-27"
+    },
+    "https://book.douban.com/subject/38195210/": {
+      "title": "醉汉广场",
+      "first_seen": "2026-03-27",
+      "last_seen": "2026-03-27"
+    },
+    "37841158": {
+      "title": "密室偏爱时代的谋杀事件",
+      "first_seen": "2026-03-27",
+      "last_seen": "2026-03-27"
+    },
+    "37808522": {
+      "title": "世界上最透明的故事",
+      "first_seen": "2026-03-27",
+      "last_seen": "2026-03-27"
+    },
+    "37648911": {
+      "title": "只剩你一个",
+      "first_seen": "2026-03-27",
+      "last_seen": "2026-03-27"
+    },
+    "37444748": {
+      "title": "死亡之前的十五秒",
+      "first_seen": "2026-03-27",
+      "last_seen": "2026-03-27"
+    }
+  },
+  "rss": {}
+}
