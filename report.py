@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import logging
 import os
-import base64
 import json
 import re
 from hashlib import md5
@@ -505,7 +504,7 @@ HTML_TEMPLATE = _html_env.from_string(
           <article class="book-card">
             <div class="rank">No.{{ "%02d" % loop.index }}</div>
             {% if book.cover_url %}
-            <img class="cover" src="{{ book.cover_url }}" alt="《{{ book.title }}》封面">
+            <img class="cover" src="{{ book.cover_url }}" alt="《{{ book.title }}》封面" loading="lazy" decoding="async">
             {% else %}
             <div class="cover cover-fallback">Mystery<br>Selection</div>
             {% endif %}
@@ -779,23 +778,6 @@ def _cache_cover_image(cover_url: str, output_dir: str, book_id: str) -> str:
     return f"assets/covers/{file_name}"
 
 
-def _file_to_data_uri(file_path: str) -> str:
-    if not os.path.exists(file_path):
-        return ""
-    ext = os.path.splitext(file_path)[1].lower()
-    mime_map = {
-        ".jpg": "image/jpeg",
-        ".jpeg": "image/jpeg",
-        ".png": "image/png",
-        ".webp": "image/webp",
-        ".gif": "image/gif",
-    }
-    content_type = mime_map.get(ext, "image/jpeg")
-    with open(file_path, "rb") as fh:
-        encoded = base64.b64encode(fh.read()).decode("ascii")
-    return f"data:{content_type};base64,{encoded}"
-
-
 def generate_report(
     books: list[dict],
     rss_entries: list[dict],
@@ -813,11 +795,13 @@ def generate_report(
     generated_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     prepared_books = [_prepare_book(book) for book in books]
+    embed_cover_images = bool(cfg.get("embed_cover_images", False))
     for book in prepared_books:
         local_cover = _cache_cover_image(str(book.get("cover_url") or ""), output_dir, str(book.get("id") or ""))
         if local_cover:
-            embedded_cover = _file_to_data_uri(os.path.join(output_dir, local_cover))
-            book["cover_url"] = embedded_cover or local_cover
+            book["cover_url"] = local_cover
+            if embed_cover_images:
+                logger.warning("embed_cover_images=true 会显著增大 HTML 体积，当前已忽略该配置")
         elif _is_placeholder_cover(str(book.get("cover_url") or "")):
             book["cover_url"] = ""
     prepared_rss = [_prepare_entry(entry) for entry in rss_entries]

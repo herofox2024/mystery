@@ -58,3 +58,6 @@ htmlcov/
 
 # Windows
 Thumbs.db
+output/推理资讯周报_*.html
+output/推理资讯周报_*.md
+output/assets/covers/*.jpg

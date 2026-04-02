@@ -45,7 +45,7 @@ def _copy_latest_as_index(latest_report: Path, site_dir: Path) -> Path:
 def _archive_report(latest_report: Path, reports_dir: Path) -> Path:
     reports_dir.mkdir(parents=True, exist_ok=True)
     target = reports_dir / latest_report.name
-    shutil.copy2(latest_report, target)
+    target.write_text(_rewrite_asset_paths_for_archive(latest_report.read_text(encoding="utf-8")), encoding="utf-8")
     return target
 
 
@@ -56,9 +56,18 @@ def _sync_all_reports(output_dir: Path, reports_dir: Path) -> int:
         if not REPORT_RE.match(file.name):
             continue
         target = reports_dir / file.name
-        shutil.copy2(file, target)
+        target.write_text(_rewrite_asset_paths_for_archive(file.read_text(encoding="utf-8")), encoding="utf-8")
         copied += 1
     return copied
+
+
+def _rewrite_asset_paths_for_archive(content: str) -> str:
+    return (
+        content.replace('src="assets/', 'src="../assets/')
+        .replace("src='assets/", "src='../assets/")
+        .replace('href="assets/', 'href="../assets/')
+        .replace("href='assets/", "href='../assets/")
+    )
 
 
 def _copy_assets_if_exists(output_dir: Path, site_dir: Path) -> None:
@@ -153,7 +162,8 @@ def _run_git_publish(site_dir: Path, latest_name: str) -> None:
         print("skip git publish: current directory is not a git repo")
         return
 
-    rel_paths = ["index.html", "reports"]
+    # Publish the site-facing files only: homepage, archives, and synced assets.
+    rel_paths = ["index.html", "reports", "assets"]
     subprocess.run(["git", "add", *rel_paths], cwd=site_dir, check=True)
     commit_msg = f"publish weekly report: {latest_name}"
     status = subprocess.run(

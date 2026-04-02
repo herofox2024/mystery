@@ -1,12 +1,42 @@
 {
   "books": {
-    "https://book.douban.com/subject/38236690/": {
-      "title": "解剖偵探",
-      "first_seen": "2026-03-27",
-      "last_seen": "2026-03-27"
+    "https://book.douban.com/subject/38391752/": {
+      "title": "東京結合人間",
+      "first_seen": "2026-04-02",
+      "last_seen": "2026-04-02"
+    },
+    "37444747": {
+      "title": "密室推理游戏: 全三册",
+      "first_seen": "2026-04-02",
+      "last_seen": "2026-04-02"
     },
     "https://book.douban.com/subject/38229491/": {
       "title": "翠鸟谋杀案",
+      "first_seen": "2026-03-27",
+      "last_seen": "2026-04-02"
+    },
+    "37841158": {
+      "title": "密室偏爱时代的谋杀事件",
+      "first_seen": "2026-03-27",
+      "last_seen": "2026-04-02"
+    },
+    "37808522": {
+      "title": "世界上最透明的故事",
+      "first_seen": "2026-03-27",
+      "last_seen": "2026-04-02"
+    },
+    "37648911": {
+      "title": "只剩你一个",
+      "first_seen": "2026-03-27",
+      "last_seen": "2026-04-02"
+    },
+    "37444748": {
+      "title": "死亡之前的十五秒",
+      "first_seen": "2026-03-27",
+      "last_seen": "2026-04-02"
+    },
+    "https://book.douban.com/subject/38236690/": {
+      "title": "解剖偵探",
       "first_seen": "2026-03-27",
       "last_seen": "2026-03-27"
     },
@@ -14,29 +44,29 @@
       "title": "或許是冬日的魔法",
       "first_seen": "2026-03-27",
       "last_seen": "2026-03-27"
-    },
-    "37841158": {
-      "title": "密室偏爱时代的谋杀事件",
-      "first_seen": "2026-03-27",
-      "last_seen": "2026-03-27"
-    },
-    "37808522": {
-      "title": "世界上最透明的故事",
-      "first_seen": "2026-03-27",
-      "last_seen": "2026-03-27"
-    },
-    "37648911": {
-      "title": "只剩你一个",
-      "first_seen": "2026-03-27",
-      "last_seen": "2026-03-27"
-    },
-    "37444748": {
-      "title": "死亡之前的十五秒",
-      "first_seen": "2026-03-27",
-      "last_seen": "2026-03-27"
     }
   },
   "rss": {
+    "https://www.theguardian.com/books/2026/apr/01/what-were-reading-john-lanchester-patmeena-sabit-and-guardian-readers-discuss-the-titles-they-have-read-over-the-last-month": {
+      "title": "What we’re reading: writers and readers on the books they enjoyed in March",
+      "first_seen": "2026-04-02",
+      "last_seen": "2026-04-02"
+    },
+    "https://lithub.com/diagnosing-murder-how-addiction-became-a-central-motif-in-crime-fiction/": {
+      "title": "Diagnosing Murder: How Addiction Became a Central Motif in Crime Fiction",
+      "first_seen": "2026-04-02",
+      "last_seen": "2026-04-02"
+    },
+    "https://crimereads.com/hannah-morrissey-david-ellis-psychological-thrillers/": {
+      "title": "The Backlist: Hannah Morrissey Revisits David Ellis’s Twisty Psychological Thriller",
+      "first_seen": "2026-04-02",
+      "last_seen": "2026-04-02"
+    },
+    "https://crimereads.com/agatha-christie-religion-occult/": {
+      "title": "How Religion and the Occult Shaped Agatha Christie’s Fiction",
+      "first_seen": "2026-04-02",
+      "last_seen": "2026-04-02"
+    },
     "https://crimereads.com/baffle-book-mystery-puzzles/": {
       "title": "“An Almost Forgotten Classic”: How The Baffle Book Influenced Modern Mysteries",
       "first_seen": "2026-03-27",

@@ -37,6 +37,7 @@ cp config.yaml.example config.yaml
 ### 3. 配置 API Key
 
 建议通过环境变量配置，不要把密钥直接写进 `config.yaml`。
+如果仓库里曾经出现过真实密钥，应立即删除并轮换该密钥，不要只做覆盖提交。
 
 ```bash
 # OpenRouter
@@ -78,6 +79,12 @@ python main.py
 
 ```bash
 python publish_pages.py
+```
+
+一键归档 + 提交 + 推送：
+
+```bash
+python publish_pages.py --git-push
 ```
 
 执行后会：
@@ -173,5 +180,7 @@ ai_filter:
 ## 注意事项
 
 1. 不要把真实 API Key 提交到仓库。
-2. 豆瓣抓取建议保持 `delay >= 2`。
-3. AI 精筛会产生 API 调用费用。
+2. `config.yaml` 中的 `api_key` 建议始终保持为空，由程序从环境变量读取。
+3. 如果历史提交里已经包含真实密钥，仅修改当前文件不够，还需要尽快轮换该密钥。
+4. 豆瓣抓取建议保持 `delay >= 2`。
+5. AI 精筛会产生 API 调用费用。
