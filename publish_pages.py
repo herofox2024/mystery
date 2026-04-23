@@ -107,6 +107,8 @@ def _write_archive_index(reports_dir: Path, archives: list[tuple[str, Path]]) ->
         ".date{font-weight:700; color:#ffd27f;}",
         "a{color:#77d1ff; text-decoration:none;}",
         "a:hover{text-decoration:underline;}",
+        ".counter{margin-top:24px; text-align:center; color:#9fb2cc; font-size:0.82rem;}",
+        ".counter span{color:#77d1ff; font-weight:700;}",
         "</style>",
         "</head>",
         "<body>",
@@ -124,7 +126,15 @@ def _write_archive_index(reports_dir: Path, archives: list[tuple[str, Path]]) ->
     else:
         lines.append("<div class=\"card\">暂无归档内容</div>")
 
-    lines.extend(["</div>", "</body>", "</html>"])
+    lines.extend([
+        "<div class=\"counter\">",
+        "<span id=\"busuanzi_container_site_pv\" style=\"display:none;\">站点总访问 <span id=\"busuanzi_value_site_pv\"></span> 次</span>",
+        "</div>",
+        "</div>",
+        "<script async src=\"//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js\"></script>",
+        "</body>",
+        "</html>",
+    ])
     target = reports_dir / "index.html"
     target.write_text("\n".join(lines), encoding="utf-8")
     return target

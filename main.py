@@ -159,9 +159,8 @@ def run_once(cfg: dict) -> None:
     stats["final_books"] = len(books)
     stats["final_rss"] = len(rss_entries)
 
-    save_state(state, int(cfg.get("state", {}).get("max_entries_per_bucket", 2000)))
-
     if not books and not rss_entries:
+        save_state(state, int(cfg.get("state", {}).get("max_entries_per_bucket", 2000)))
         logger.warning("没有发现新的书籍或资讯，跳过报告生成")
         return
 
@@ -189,6 +188,7 @@ def run_once(cfg: dict) -> None:
     md_path, html_path = generate_report(
         books, rss_entries, report_cfg, PROJECT_ROOT, stats
     )
+    save_state(state, int(cfg.get("state", {}).get("max_entries_per_bucket", 2000)))
 
     logger.info("===== 周报生成完毕 =====")
     logger.info("  Markdown: %s", md_path)

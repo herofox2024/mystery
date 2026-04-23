@@ -9,6 +9,12 @@ douban:
   max_pages: 3
   sort: "R"
   delay: 2
+  search_max_pages: 1
+  search_keywords:
+    - "国产推理"
+    - "华文推理"
+    - "悬疑推理"
+    - "历史悬疑"
 
 rss:
   # 当前 rss_feeds.py 只支持标准 RSS。

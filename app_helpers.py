@@ -17,6 +17,8 @@ DEFAULT_CONFIG: dict[str, Any] = {
         "max_pages": 3,
         "sort": "R",
         "delay": 2,
+        "search_max_pages": 1,
+        "search_keywords": [],
     },
     "rss": {
         "feeds": [],
@@ -322,7 +324,7 @@ def score_books(books: list[dict], target_year: int) -> list[dict]:
         # 排序优先级：
         # 1. 已上市且有评分的常规豆瓣条目
         # 2. 中文辅助源里的 2026 待出版/无评分条目
-        normalized["sort_bucket"] = 1 if is_china_book and rating_count <= 0 else 0
+        normalized["sort_bucket"] = 0 if is_china_book and rating_count <= 0 else 1
         scored.append(normalized)
 
     scored.sort(

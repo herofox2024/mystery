@@ -436,6 +436,22 @@ HTML_TEMPLATE = _html_env.from_string(
     font-size: 0.88rem;
     text-align: center;
   }
+  #busuanzi_container_page_pv,
+  #busuanzi_container_site_pv {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(143, 175, 214, 0.14);
+    background: rgba(255, 255, 255, 0.03);
+    font-size: 0.82rem;
+  }
+  #busuanzi_value_page_pv,
+  #busuanzi_value_site_pv {
+    color: var(--accent);
+    font-weight: 700;
+  }
   @media (max-width: 900px) {
     .hero-grid,
     .list-grid {
@@ -599,8 +615,19 @@ HTML_TEMPLATE = _html_env.from_string(
       {% endif %}
     </div>
 
-    <footer>本周报由推理资讯周报工具自动生成</footer>
+    <footer>
+      <div>本周报由推理资讯周报工具自动生成</div>
+      <div style="margin-top:8px;">
+        <span id="busuanzi_container_page_pv" style="display:none;">
+          本页访问 <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        <span id="busuanzi_container_site_pv" style="display:none;margin-left:12px;">
+          站点总访问 <span id="busuanzi_value_site_pv"></span> 次
+        </span>
+      </div>
+    </footer>
   </main>
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 </body>
 </html>
 """

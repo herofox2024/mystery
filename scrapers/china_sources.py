@@ -21,6 +21,11 @@ HEADERS = {
 }
 
 
+def _extract_subject_id(url: str) -> str:
+    match = re.search(r"/subject/(\d+)", url or "")
+    return match.group(1) if match else ""
+
+
 def _request_html(url: str, timeout: int) -> str:
     response = requests.get(url, headers=HEADERS, timeout=timeout)
     response.raise_for_status()
@@ -140,7 +145,7 @@ def _fetch_douban_doulist_books(cfg: dict, cutoff: datetime, timeout: int, targe
             books.append(
                 {
                     "source": f"china_book:{name}",
-                    "id": href,
+                    "id": _extract_subject_id(href) or href,
                     "title": title,
                     "subtitle": "",
                     "author": author,

@@ -11,6 +11,7 @@ from typing import Any
 logger = logging.getLogger(__name__)
 
 _client_cache: dict[tuple[str, str, str, float, int], Any] = {}
+_disabled_provider_keys: set[tuple[str, str, str, str]] = set()
 
 API_DELAY = 1.0
 SUPPORTED_PROVIDERS = {"openrouter", "openai", "qwen", "deepseek", "doubao"}
@@ -130,6 +131,29 @@ def _get_client(provider_cfg: dict[str, Any]):
     return _client_cache[cache_key]
 
 
+def _provider_run_key(provider_cfg: dict[str, Any]) -> tuple[str, str, str, str]:
+    return (
+        str(provider_cfg["provider"]),
+        str(provider_cfg["api_key"]),
+        str(provider_cfg["base_url"]),
+        str(provider_cfg["model"]),
+    )
+
+
+def _is_auth_failure(exc: Exception) -> bool:
+    message = str(exc).casefold()
+    markers = (
+        "401",
+        "invalid_api_key",
+        "incorrect api key",
+        "missing authentication",
+        "missing authentication header",
+        "unauthorized",
+        "authentication",
+    )
+    return any(marker in message for marker in markers)
+
+
 def _chat_with_fallback(prompt: str, cfg: dict[str, Any]) -> tuple[str | None, str | None]:
     pool = _resolve_provider_pool(cfg)
     if not pool:
@@ -144,6 +168,10 @@ def _chat_with_fallback(prompt: str, cfg: dict[str, Any]) -> tuple[str | None, s
     for item in available:
         provider = item["provider"]
         model = item["model"]
+        provider_key = _provider_run_key(item)
+        if provider_key in _disabled_provider_keys:
+            logger.info("AI filtering: skipping disabled provider=%s model=%s", provider, model)
+            continue
         try:
             logger.info("AI filtering: trying provider=%s model=%s", provider, model)
             client = _get_client(item)
@@ -158,6 +186,13 @@ def _chat_with_fallback(prompt: str, cfg: dict[str, Any]) -> tuple[str | None, s
             raise ValueError("empty response")
         except Exception as exc:
             last_exc = exc
+            if _is_auth_failure(exc):
+                _disabled_provider_keys.add(provider_key)
+                logger.warning(
+                    "AI filtering: disabling provider=%s model=%s for this run after auth failure",
+                    provider,
+                    model,
+                )
             logger.warning("AI filtering failed for provider=%s model=%s: %s", provider, model, exc)
 
     if last_exc:
