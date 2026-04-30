@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>推理资讯周报_2026-04-30</title>
+<style>
+  :root {
+    --bg: #08111f;
+    --bg-soft: #111f35;
+    --panel: rgba(12, 21, 37, 0.72);
+    --panel-strong: rgba(9, 17, 30, 0.9);
+    --line: rgba(143, 175, 214, 0.18);
+    --ink: #edf4ff;
+    --muted: #8fa5c4;
+    --accent: #61d0ff;
+    --accent-2: #7df0c8;
+    --accent-3: #ffc857;
+    --shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    color: var(--ink);
+    background:
+      radial-gradient(circle at 15% 20%, rgba(97, 208, 255, 0.2), transparent 24%),
+      radial-gradient(circle at 85% 12%, rgba(125, 240, 200, 0.14), transparent 20%),
+      radial-gradient(circle at 50% 100%, rgba(255, 200, 87, 0.08), transparent 28%),
+      linear-gradient(160deg, #050b14 0%, #08111f 45%, #0f1c31 100%);
+    font-family: "Noto Serif SC", "Source Han Serif SC", "Microsoft YaHei", serif;
+    line-height: 1.75;
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 32px 32px;
+    mask-image: linear-gradient(180deg, rgba(0,0,0,0.5), transparent 85%);
+  }
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .page {
+    width: min(1180px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 28px 0 72px;
+  }
+  .hero {
+    position: relative;
+    overflow: hidden;
+    padding: 34px;
+    border: 1px solid var(--line);
+    border-radius: 32px;
+    background:
+      linear-gradient(135deg, rgba(97, 208, 255, 0.1), transparent 42%),
+      linear-gradient(135deg, rgba(255, 200, 87, 0.1), transparent 65%),
+      var(--panel-strong);
+    box-shadow: var(--shadow);
+    isolation: isolate;
+  }
+  .hero::after {
+    content: "";
+    position: absolute;
+    width: 360px;
+    height: 360px;
+    right: -80px;
+    top: -110px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(97, 208, 255, 0.28), transparent 68%);
+    filter: blur(10px);
+    z-index: -1;
+  }
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(125, 240, 200, 0.22);
+    background: rgba(125, 240, 200, 0.08);
+    color: var(--accent-2);
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(280px, 0.8fr);
+    gap: 28px;
+    align-items: end;
+    margin-top: 22px;
+  }
+  h1 {
+    margin: 0;
+    font-size: clamp(2.6rem, 5vw, 4.8rem);
+    line-height: 0.98;
+    letter-spacing: 0.02em;
+  }
+  .hero-copy {
+    max-width: 760px;
+  }
+  .hero-side {
+    display: grid;
+    gap: 14px;
+  }
+  .hero-card {
+    padding: 18px 18px 16px;
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(14px);
+  }
+  .hero-label {
+    color: var(--muted);
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .hero-value {
+    margin-top: 8px;
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    line-height: 1;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .hero-sub {
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: 0.92rem;
+  }
+  .stack {
+    display: grid;
+    gap: 22px;
+    margin-top: 24px;
+  }
+  .section {
+    padding: 24px;
+    border: 1px solid var(--line);
+    border-radius: 28px;
+    background: var(--panel);
+    backdrop-filter: blur(18px);
+    box-shadow: var(--shadow);
+  }
+  .section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 18px;
+  }
+  h2 {
+    margin: 0;
+    font-size: 1.45rem;
+    color: var(--ink);
+  }
+  .section-note {
+    color: var(--muted);
+    font-size: 0.92rem;
+  }
+  .book-grid {
+    display: grid;
+    gap: 16px;
+  }
+  .book-card {
+    position: relative;
+    display: grid;
+    grid-template-columns: 120px minmax(0, 1fr);
+    gap: 20px;
+    padding: 20px;
+    border-radius: 24px;
+    border: 1px solid rgba(143, 175, 214, 0.14);
+    background:
+      linear-gradient(135deg, rgba(97, 208, 255, 0.06), transparent 48%),
+      rgba(255, 255, 255, 0.03);
+    transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+  }
+  .book-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(97, 208, 255, 0.32);
+    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.24);
+  }
+  .rank {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    font-size: 0.8rem;
+    color: rgba(237, 244, 255, 0.34);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .cover {
+    width: 120px;
+    height: 168px;
+    object-fit: cover;
+    border-radius: 18px;
+    background:
+      linear-gradient(145deg, rgba(97, 208, 255, 0.16), rgba(255, 255, 255, 0.04));
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .cover-fallback {
+    display: flex;
+    align-items: end;
+    justify-content: start;
+    padding: 14px;
+    color: rgba(237, 244, 255, 0.8);
+    font-size: 0.82rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .book-title {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    margin: 0;
+    font-size: 1.32rem;
+    line-height: 1.2;
+  }
+  .book-title a:hover,
+  .rss-title a:hover,
+  .mini-title a:hover {
+    color: var(--accent);
+  }
+  .subtitle {
+    margin-top: 6px;
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+  .meta-line {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+    margin-top: 12px;
+    color: var(--muted);
+    font-size: 0.94rem;
+  }
+  .meta-chip {
+    padding: 6px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(143, 175, 214, 0.16);
+    background: rgba(255, 255, 255, 0.03);
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: rgba(125, 240, 200, 0.12);
+    border: 1px solid rgba(125, 240, 200, 0.24);
+    color: var(--accent-2);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+  .summary,
+  .reason {
+    margin-top: 14px;
+    padding: 14px 16px;
+    border-radius: 18px;
+    border: 1px solid rgba(97, 208, 255, 0.14);
+    background: rgba(97, 208, 255, 0.06);
+    color: #dce9ff;
+    font-size: 0.95rem;
+  }
+  .list-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .mini-card, .rss-card {
+    padding: 16px 18px;
+    border-radius: 20px;
+    border: 1px solid rgba(143, 175, 214, 0.14);
+    background: rgba(255, 255, 255, 0.03);
+  }
+  .mini-title, .rss-title {
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.35;
+  }
+  .mini-meta, .rss-meta {
+    margin-top: 8px;
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+  .empty {
+    padding: 18px;
+    border-radius: 18px;
+    background: rgba(255,255,255,0.03);
+    color: var(--muted);
+  }
+  .closing {
+    position: relative;
+    overflow: hidden;
+    padding: 24px;
+    border-radius: 26px;
+    border: 1px solid rgba(125, 240, 200, 0.18);
+    background:
+      linear-gradient(135deg, rgba(125, 240, 200, 0.08), transparent 45%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02));
+  }
+  .closing-label {
+    color: var(--accent-2);
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .closing-text {
+    margin-top: 10px;
+    font-size: 1.1rem;
+    color: var(--ink);
+  }
+  footer {
+    padding-top: 10px;
+    color: var(--muted);
+    font-size: 0.88rem;
+    text-align: center;
+  }
+  #busuanzi_container_page_pv,
+  #busuanzi_container_site_pv {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(143, 175, 214, 0.14);
+    background: rgba(255, 255, 255, 0.03);
+    font-size: 0.82rem;
+  }
+  #busuanzi_value_page_pv,
+  #busuanzi_value_site_pv {
+    color: var(--accent);
+    font-weight: 700;
+  }
+  @media (max-width: 900px) {
+    .hero-grid,
+    .list-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 720px) {
+    .page {
+      width: min(100% - 20px, 1180px);
+      padding: 14px 0 40px;
+    }
+    .hero,
+    .section {
+      padding: 18px;
+      border-radius: 22px;
+    }
+    .book-card {
+      grid-template-columns: 1fr;
+      padding: 18px;
+    }
+    .cover {
+      width: 100%;
+      max-width: 180px;
+      height: 220px;
+    }
+    .rank {
+      position: static;
+      margin-bottom: 8px;
+      display: inline-block;
+    }
+  }
+</style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div class="eyebrow">Mystery Weekly Digest</div>
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <h1>推理资讯周报_2026-04-30</h1>
+        </div>
+        <div class="hero-side">
+          <div class="hero-card">
+            <div class="hero-label">本期新书</div>
+            <div class="hero-value">4</div>
+            <div class="hero-sub">生成时间：2026-04-30 10:44:39</div>
+          </div>
+          <div class="hero-card">
+            <div class="hero-label">本期资讯</div>
+            <div class="hero-value">0</div>
+            <div class="hero-sub">自动整理后的最终展示结果</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="stack">
+      <section class="section">
+        <div class="section-head">
+          <h2>本周精选新书</h2>
+          <div class="section-note">共 4 本</div>
+        </div>
+        <div class="book-grid">
+          <article class="book-card">
+            <div class="rank">No.01</div>
+            <img class="cover" src="../assets/covers/37800332.jpg" alt="《这个圣诞，人人都有秘密》封面" loading="lazy" decoding="async">
+            <div>
+              <h3 class="book-title">
+                <a href="https://book.douban.com/subject/37800332/" target="_blank" rel="noopener noreferrer">这个圣诞，人人都有秘密</a>
+<span class="badge">本周新增</span>              </h3>
+              <div class="meta-line">
+                <span class="meta-chip">[澳] 本杰明·史蒂文森</span>
+                <span class="meta-chip">新星出版社</span>
+                <span class="meta-chip">2026</span>
+                <span class="meta-chip">8.7（64人评价）</span>
+                <span class="meta-chip">综合分 130.53</span>
+              </div>
+<div class="reason"><strong>AI 推荐：</strong>2026年出版，古典式谋杀推理、侦探元素，非评论研究。</div><div class="summary">◎“欧内斯特·坎宁安（Ernest Cunningham）”系列 连续登上日本四大推理榜单·海外榜
+南半球的圣诞节，只有更多古典式谋杀！
+干脆打破第四面墙 ...</div>            </div>
+          </article>
+          <article class="book-card">
+            <div class="rank">No.02</div>
+            <img class="cover" src="../assets/covers/37437772.jpg" alt="《鼓动》封面" loading="lazy" decoding="async">
+            <div>
+              <h3 class="book-title">
+                <a href="https://book.douban.com/subject/37437772/" target="_blank" rel="noopener noreferrer">鼓动</a>
+<span class="badge">本周新增</span>              </h3>
+              <div class="meta-line">
+                <span class="meta-chip">[日] 叶真中显</span>
+                <span class="meta-chip">北京联合出版公司</span>
+                <span class="meta-chip">2026</span>
+                <span class="meta-chip">7.4（850人评价）</span>
+                <span class="meta-chip">综合分 126.10</span>
+              </div>
+<div class="reason"><strong>AI 推荐：</strong>2026年出版，社会派推理小说，非纪实评论。</div><div class="summary">【编辑推荐】
+🔪🔪🔪他杀人，不是因为想毁灭世界，而是世界早已毁灭了他。
+罗翔盛赞作者 叶真中显 再写超越《绝叫》《Blue》的崩坏人生！
+《绝叫》写出的是人...</div>            </div>
+          </article>
+          <article class="book-card">
+            <div class="rank">No.03</div>
+            <img class="cover" src="../assets/covers/37867104.jpg" alt="《2025年中国悬疑推理小说精选》封面" loading="lazy" decoding="async">
+            <div>
+              <h3 class="book-title">
+                <a href="https://book.douban.com/subject/37867104/" target="_blank" rel="noopener noreferrer">2025年中国悬疑推理小说精选</a>
+<span class="badge">本周新增</span>              </h3>
+              <div class="meta-line">
+                <span class="meta-chip">华斯比 选编</span>
+                <span class="meta-chip">长江文艺出版社</span>
+                <span class="meta-chip">2026</span>
+                <span class="meta-chip">8.0（91人评价）</span>
+                <span class="meta-chip">综合分 123.64</span>
+              </div>
+<div class="reason"><strong>AI 推荐：</strong>2026年出版，悬疑推理小说精选集，非评论研究。</div><div class="summary">华斯比 选编 / 长江文艺出版社 / 2026 / 35</div>            </div>
+          </article>
+          <article class="book-card">
+            <div class="rank">No.04</div>
+            <img class="cover" src="../assets/covers/37800340.jpg" alt="《神乐坂怪谈》封面" loading="lazy" decoding="async">
+            <div>
+              <h3 class="book-title">
+                <a href="https://book.douban.com/subject/37800340/" target="_blank" rel="noopener noreferrer">神乐坂怪谈</a>
+<span class="badge">本周新增</span>              </h3>
+              <div class="meta-line">
+                <span class="meta-chip">[日]芦泽央</span>
+                <span class="meta-chip">江苏凤凰文艺出版社</span>
+                <span class="meta-chip">2026</span>
+                <span class="meta-chip">7.0（286人评价）</span>
+                <span class="meta-chip">综合分 116.58</span>
+              </div>
+<div class="reason"><strong>AI 推荐：</strong>2026年出版的日本怪谈推理小说，符合要求，推荐。</div><div class="summary">从编辑那里接到约稿的“我”，揭开了尘封八年的禁忌回忆——
+即将结婚的夫妇因一次占卜分崩离析，男人尖叫着冲向路中央离奇身亡，女人制作的海报上爬满了“道歉”二字...</div>            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>本周资讯精选</h2>
+          <div class="section-note">共 0 条</div>
+        </div>
+        <div class="empty">本周没有符合条件的资讯。</div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>新书完整清单</h2>
+          <div class="section-note">前 4 本</div>
+        </div>
+        <div class="list-grid">
+          <article class="mini-card">
+            <div class="mini-title"><a href="https://book.douban.com/subject/37800332/" target="_blank" rel="noopener noreferrer">这个圣诞，人人都有秘密</a></div>
+            <div class="mini-meta">[澳] 本杰明·史蒂文森 · 新星出版社 · 2026 · 8.7（64人评价） · 本周新增</div>
+          </article>
+          <article class="mini-card">
+            <div class="mini-title"><a href="https://book.douban.com/subject/37437772/" target="_blank" rel="noopener noreferrer">鼓动</a></div>
+            <div class="mini-meta">[日] 叶真中显 · 北京联合出版公司 · 2026 · 7.4（850人评价） · 本周新增</div>
+          </article>
+          <article class="mini-card">
+            <div class="mini-title"><a href="https://book.douban.com/subject/37867104/" target="_blank" rel="noopener noreferrer">2025年中国悬疑推理小说精选</a></div>
+            <div class="mini-meta">华斯比 选编 · 长江文艺出版社 · 2026 · 8.0（91人评价） · 本周新增</div>
+          </article>
+          <article class="mini-card">
+            <div class="mini-title"><a href="https://book.douban.com/subject/37800340/" target="_blank" rel="noopener noreferrer">神乐坂怪谈</a></div>
+            <div class="mini-meta">[日]芦泽央 · 江苏凤凰文艺出版社 · 2026 · 7.0（286人评价） · 本周新增</div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>资讯完整清单</h2>
+          <div class="section-note">前 0 条</div>
+        </div>
+        <div class="empty">没有可展示的资讯。</div>
+      </section>
+
+      <section class="closing">
+        <div class="closing-label">Weekly Note</div>
+        <div class="closing-text">本周推理新书风格多样，既有澳洲本格与日本社会派，也有年度精选和怪谈故事。</div>
+      </section>
+    </div>
+
+    <footer>
+      <div>本周报由推理资讯周报工具自动生成</div>
+      <div style="margin-top:8px;">
+        <span id="busuanzi_container_page_pv" style="display:none;">
+          本页访问 <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        <span id="busuanzi_container_site_pv" style="display:none;margin-left:12px;">
+          站点总访问 <span id="busuanzi_value_site_pv"></span> 次
+        </span>
+      </div>
+    </footer>
+  </main>
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</body>
+</html>
