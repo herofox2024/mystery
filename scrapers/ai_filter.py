@@ -14,7 +14,22 @@ _client_cache: dict[tuple[str, str, str, float, int], Any] = {}
 _disabled_provider_keys: set[tuple[str, str, str, str]] = set()
 
 API_DELAY = 1.0
-SUPPORTED_PROVIDERS = {"openrouter", "openai", "qwen", "deepseek", "doubao"}
+SUPPORTED_PROVIDERS = {"openrouter", "openai", "qwen", "deepseek", "doubao", "zhipu"}
+
+
+def _stats(cfg: dict[str, Any]) -> dict[str, Any]:
+    stats = cfg.setdefault("_ai_filter_stats", {})
+    stats.setdefault("successful_calls", 0)
+    stats.setdefault("failed_calls", 0)
+    stats.setdefault("unavailable_calls", 0)
+    stats.setdefault("dropped_items", 0)
+    stats.setdefault("passed_through_items", 0)
+    return stats
+
+
+def _increment_stat(cfg: dict[str, Any], key: str, amount: int = 1) -> None:
+    stats = _stats(cfg)
+    stats[key] = int(stats.get(key, 0)) + amount
 
 
 def _default_base_url(provider: str) -> str:
@@ -28,6 +43,8 @@ def _default_base_url(provider: str) -> str:
         return "https://api.deepseek.com/v1"
     if provider == "doubao":
         return "https://ark.cn-beijing.volces.com/api/v3"
+    if provider == "zhipu":
+        return "https://open.bigmodel.cn/api/paas/v4"
     raise ValueError(f"Unsupported AI provider: {provider}")
 
 
@@ -42,6 +59,8 @@ def _default_model(provider: str) -> str:
         return "deepseek-chat"
     if provider == "doubao":
         return "doubao-seed-1-6-250615"
+    if provider == "zhipu":
+        return "GLM-4-Flash-250414"
     raise ValueError(f"Unsupported AI provider: {provider}")
 
 
@@ -52,8 +71,11 @@ def _resolve_api_key(provider: str, explicit_key: str) -> str:
         "qwen": "DASHSCOPE_API_KEY",
         "deepseek": "DEEPSEEK_API_KEY",
         "doubao": "DOUBAO_API_KEY",
+        "zhipu": "ZHIPUAI_API_KEY",
     }
     env_key = env_map[provider]
+    if provider == "zhipu":
+        return os.environ.get(env_key) or os.environ.get("ZHIPU_API_KEY") or explicit_key
     return os.environ.get(env_key) or explicit_key
 
 
@@ -81,7 +103,7 @@ def _normalize_provider_entry(item: dict[str, Any]) -> dict[str, Any]:
         "base_url": base_url,
         "model": model,
         "headers": _provider_headers(provider),
-        "timeout": float(item.get("timeout", 30)),
+        "timeout": float(item.get("timeout", 300 if provider == "zhipu" else 30)),
         "max_retries": int(item.get("max_retries", 1)),
     }
 
@@ -156,12 +178,19 @@ def _is_auth_failure(exc: Exception) -> bool:
 
 def _chat_with_fallback(prompt: str, cfg: dict[str, Any]) -> tuple[str | None, str | None]:
     pool = _resolve_provider_pool(cfg)
+    stats = _stats(cfg)
+    stats["provider_count"] = len(pool)
     if not pool:
+        stats["last_failure"] = "no_provider"
+        _increment_stat(cfg, "unavailable_calls")
         return None, None
 
     available = [item for item in pool if item.get("api_key")]
+    stats["available_provider_count"] = len(available)
     if not available:
         logger.warning("AI filtering: no valid API key configured for any provider, skipping")
+        stats["last_failure"] = "no_api_key"
+        _increment_stat(cfg, "unavailable_calls")
         return None, None
 
     last_exc: Exception | None = None
@@ -182,6 +211,9 @@ def _chat_with_fallback(prompt: str, cfg: dict[str, Any]) -> tuple[str | None, s
             )
             text = (result.choices[0].message.content or "").strip()
             if text:
+                stats["last_failure"] = ""
+                stats["last_provider"] = f"{provider}:{model}"
+                _increment_stat(cfg, "successful_calls")
                 return text, f"{provider}:{model}"
             raise ValueError("empty response")
         except Exception as exc:
@@ -197,6 +229,8 @@ def _chat_with_fallback(prompt: str, cfg: dict[str, Any]) -> tuple[str | None, s
 
     if last_exc:
         logger.warning("AI filtering: all providers failed, fallback to non-AI path: %s", last_exc)
+    stats["last_failure"] = "provider_error"
+    _increment_stat(cfg, "failed_calls")
     return None, None
 
 
@@ -257,6 +291,7 @@ def filter_rss_entries(entries: list[dict], cfg: dict) -> list[dict]:
         decisions = {str(item.get("id")): item for item in items if isinstance(item, dict)}
 
         if not decisions and fail_closed:
+            _increment_stat(cfg, "dropped_items", len(batch))
             logger.warning(
                 "AI filtering RSS entries: no valid decision for current batch, dropping %d items because fail_closed=true",
                 len(batch),
@@ -269,11 +304,13 @@ def filter_rss_entries(entries: list[dict], cfg: dict) -> list[dict]:
             decision = decisions.get(str(i))
             if not decision:
                 if fail_closed:
+                    _increment_stat(cfg, "dropped_items")
                     logger.warning(
                         "AI filtering RSS entries: missing decision for item '%s', dropped because fail_closed=true",
                         entry.get("title", ""),
                     )
                     continue
+                _increment_stat(cfg, "passed_through_items")
                 filtered.append(entry)
                 continue
             if decision.get("keep"):
@@ -337,6 +374,7 @@ def filter_douban_books(books: list[dict], cfg: dict) -> list[dict]:
         decisions = {str(item.get("id")): item for item in items if isinstance(item, dict)}
 
         if not decisions and fail_closed:
+            _increment_stat(cfg, "dropped_items", len(batch))
             logger.warning(
                 "AI filtering Douban books: no valid decision for current batch, dropping %d books because fail_closed=true",
                 len(batch),
@@ -349,11 +387,13 @@ def filter_douban_books(books: list[dict], cfg: dict) -> list[dict]:
             decision = decisions.get(str(i))
             if not decision:
                 if fail_closed:
+                    _increment_stat(cfg, "dropped_items")
                     logger.warning(
                         "AI filtering Douban books: missing decision for '%s', dropped because fail_closed=true",
                         book.get("title", ""),
                     )
                     continue
+                _increment_stat(cfg, "passed_through_items")
                 filtered.append(book)
                 continue
             if decision.get("keep"):

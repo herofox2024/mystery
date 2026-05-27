@@ -68,6 +68,13 @@ ai_filter:
       timeout: 30
       max_retries: 1
 
+    - provider: "zhipu"
+      api_key: ""
+      base_url: ""
+      model: "GLM-4-Flash-250414"
+      timeout: 300
+      max_retries: 1
+
     - provider: "doubao"
       api_key: ""
       base_url: ""

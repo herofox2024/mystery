@@ -16,6 +16,7 @@
 - `openai`
 - `qwen`
 - `deepseek`
+- `zhipu`
 - `doubao`
 
 项目现在支持按顺序尝试多个 provider。前一个失败、超时或未配置 key 时，会自动尝试下一个。
@@ -52,6 +53,9 @@ export DASHSCOPE_API_KEY="sk-xxx..."
 # DeepSeek
 export DEEPSEEK_API_KEY="sk-xxx..."
 
+# Zhipu / BigModel
+export ZHIPUAI_API_KEY="xxx"
+
 # Doubao / Ark
 export DOUBAO_API_KEY="xxx"
 export DOUBAO_ENDPOINT_ID_TEXT="ep-xxx"
@@ -64,6 +68,7 @@ $env:OPENROUTER_API_KEY="sk-or-xxx..."
 $env:OPENAI_API_KEY="sk-xxx..."
 $env:DASHSCOPE_API_KEY="sk-xxx..."
 $env:DEEPSEEK_API_KEY="sk-xxx..."
+$env:ZHIPUAI_API_KEY="xxx"
 $env:DOUBAO_API_KEY="xxx"
 $env:DOUBAO_ENDPOINT_ID_TEXT="ep-xxx"
 ```
@@ -118,6 +123,9 @@ ai_filter:
       model: "deepseek-chat"
     - provider: "qwen"
       model: "qwen-plus"
+    - provider: "zhipu"
+      model: "GLM-4-Flash-250414"
+      timeout: 300
     - provider: "doubao"
       endpoint_id: "ep-xxx"
     - provider: "openai"
@@ -130,6 +138,7 @@ ai_filter:
 - `base_url` 留空时，会使用该 provider 的默认兼容接口地址
 - `doubao` 优先使用 `endpoint_id` 或环境变量 `DOUBAO_ENDPOINT_ID_TEXT`
 - `openrouter` 默认兼容接口地址是 `https://openrouter.ai/api/v1`
+- `zhipu` 默认兼容接口地址是 `https://open.bigmodel.cn/api/paas/v4`
 - `timeout` 和 `max_retries` 可按 provider 单独设置
 
 旧版单 provider 配置仍然兼容：
@@ -151,6 +160,7 @@ ai_filter:
 - `openai`: `gpt-4.1-mini`
 - `qwen`: `qwen-plus`
 - `deepseek`: `deepseek-chat`
+- `zhipu`: `GLM-4-Flash-250414`
 - `doubao`: 使用你在火山方舟创建的文本 endpoint
 
 ## 输出文件
@@ -175,6 +185,22 @@ ai_filter:
 │   ├── rss_feeds.py
 │   └── ai_filter.py
 └── output/
+```
+
+## 更新记录
+
+### 2026-05-27
+
+- 增加 P0 稳定性保护：AI 筛选阶段会输出摘要日志，包含筛选前后数量、可用 provider 数量、调用成功/失败/不可用次数、丢弃数量和透传数量，便于定位“为什么没有生成内容”。
+- 增强测试模式：`python main.py --once --test` 会使用独立状态文件和独立输出目录；测试模式下 AI 筛选默认 fail-open，AI 不可用时保留规则过滤后的候选内容，避免测试运行被 API Key 或 provider 故障误清空。
+- 新增回归测试：`tests/test_p0_guardrails.py` 覆盖 AI 无 Key fail-open、测试状态隔离、智谱 provider 默认参数和环境变量解析。
+- 新增智谱 AI provider：provider 名称为 `zhipu`，默认兼容接口为 `https://open.bigmodel.cn/api/paas/v4`，默认读取 `ZHIPUAI_API_KEY`，兼容 `ZHIPU_API_KEY`。
+- 智谱默认模型设置为 `GLM-4-Flash-250414`，默认 `timeout` 设置为 `300` 秒；`config.yaml` 和 `config.yaml.example` 已加入对应配置。
+- 已验证命令：
+
+```bash
+python -m py_compile main.py app_helpers.py report.py publish_pages.py scrapers/__init__.py scrapers/ai_filter.py scrapers/china_sources.py scrapers/douban.py scrapers/rss_feeds.py tests/test_p0_guardrails.py
+python -m pytest -q
 ```
 
 ## 注意事项

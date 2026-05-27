@@ -46,6 +46,35 @@ logging.basicConfig(
 logger = logging.getLogger("weekly_report")
 
 
+def _prepare_ai_config(ai_cfg: dict, rules_cfg: dict, is_test: bool = False) -> dict:
+    prepared = dict(ai_cfg)
+    prepared["target_year"] = rules_cfg["target_year"]
+    prepared.setdefault("_ai_filter_stats", {})
+    if is_test and prepared.get("fail_closed", True):
+        prepared["fail_closed"] = False
+        logger.info("Test mode uses AI fail-open: keeping rule-filtered candidates when AI is unavailable")
+    return prepared
+
+
+def _log_ai_filter_summary(ai_cfg: dict, before_books: int, after_books: int, before_rss: int, after_rss: int) -> None:
+    stats = ai_cfg.get("_ai_filter_stats", {})
+    logger.info(
+        "AI filter summary: books %d -> %d, rss %d -> %d, providers=%s/%s, calls ok=%s failed=%s unavailable=%s, dropped=%s, pass_through=%s, last_failure=%s",
+        before_books,
+        after_books,
+        before_rss,
+        after_rss,
+        stats.get("available_provider_count", 0),
+        stats.get("provider_count", 0),
+        stats.get("successful_calls", 0),
+        stats.get("failed_calls", 0),
+        stats.get("unavailable_calls", 0),
+        stats.get("dropped_items", 0),
+        stats.get("passed_through_items", 0),
+        stats.get("last_failure", ""),
+    )
+
+
 def load_config() -> dict:
     """加载 config.yaml 配置文件。"""
     cfg_path = os.path.join(PROJECT_ROOT, "config.yaml")
@@ -67,12 +96,19 @@ def load_config() -> dict:
     return cfg
 
 
-def run_once(cfg: dict) -> None:
+def run_once(cfg: dict, is_test: bool = False) -> None:
     """执行一次完整的抓取 + 生成流程。"""
     logger.info("===== 开始执行推理资讯周报生成 =====")
     rules_cfg = cfg.get("filter_rules", {})
     ai_cfg = cfg.get("ai_filter", {})
-    state = load_state(PROJECT_ROOT, cfg.get("state", {}))
+    state_cfg = dict(cfg.get("state", {}))
+    if is_test:
+        base_state_path = str(state_cfg.get("path", "data/state.json"))
+        if base_state_path.lower().endswith(".json"):
+            state_cfg["path"] = base_state_path[:-5] + "_test.json"
+        else:
+            state_cfg["path"] = base_state_path + "_test"
+    state = load_state(PROJECT_ROOT, state_cfg)
     stats = {
         "raw_books": 0,
         "filtered_books": 0,
@@ -132,8 +168,9 @@ def run_once(cfg: dict) -> None:
 
     # 4. AI 筛选
     if ai_cfg.get("enabled"):
-        ai_cfg = dict(ai_cfg)
-        ai_cfg["target_year"] = rules_cfg["target_year"]
+        ai_cfg = _prepare_ai_config(ai_cfg, rules_cfg, is_test=is_test)
+        before_ai_books = len(books)
+        before_ai_rss = len(rss_entries)
 
         # 4.1 AI 筛选豆瓣书籍
         if ai_cfg.get("filter_douban") and books:
@@ -150,6 +187,9 @@ def run_once(cfg: dict) -> None:
                 logger.error("AI 筛选 RSS 异常", exc_info=True)
 
     # 5. 历史去重，只保留本周首次出现的内容进入最终排序
+    if ai_cfg.get("enabled"):
+        _log_ai_filter_summary(ai_cfg, before_ai_books, len(books), before_ai_rss, len(rss_entries))
+
     books = mark_new_items(score_books(books, int(rules_cfg["target_year"])), state, "books")
     rss_entries = mark_new_items(score_rss(rss_entries), state, "rss")
 
@@ -160,11 +200,15 @@ def run_once(cfg: dict) -> None:
     stats["final_rss"] = len(rss_entries)
 
     if not books and not rss_entries:
-        save_state(state, int(cfg.get("state", {}).get("max_entries_per_bucket", 2000)))
+        save_state(state, int(state_cfg.get("max_entries_per_bucket", 2000)))
         logger.warning("没有发现新的书籍或资讯，跳过报告生成")
         return
 
     report_cfg = dict(cfg.get("report", {}))
+    if is_test:
+        # Keep test artifacts isolated from production reports.
+        report_cfg["output_dir"] = str(report_cfg.get("output_dir", "output")) + "_test"
+        report_cfg["title_prefix"] = str(report_cfg.get("title_prefix", "推理资讯周报")) + "_测试"
     report_cfg.update(
         {
             "top_books": rules_cfg.get("top_books", 12),
@@ -188,7 +232,7 @@ def run_once(cfg: dict) -> None:
     md_path, html_path = generate_report(
         books, rss_entries, report_cfg, PROJECT_ROOT, stats
     )
-    save_state(state, int(cfg.get("state", {}).get("max_entries_per_bucket", 2000)))
+    save_state(state, int(state_cfg.get("max_entries_per_bucket", 2000)))
 
     logger.info("===== 周报生成完毕 =====")
     logger.info("  Markdown: %s", md_path)
@@ -200,12 +244,17 @@ def main() -> None:
     parser.add_argument(
         "--once", action="store_true", help="立即执行一次并退出（不进入定时模式）"
     )
+    parser.add_argument(
+        "--test",
+        action="store_true",
+        help="测试模式：输出到独立目录并标记测试文件名，不与正式周报混用",
+    )
     args = parser.parse_args()
 
     cfg = load_config()
 
     if args.once:
-        run_once(cfg)
+        run_once(cfg, is_test=args.test)
         return
 
     # 定时模式
@@ -214,7 +263,7 @@ def main() -> None:
     run_time = sched_cfg.get("time", "18:00")
 
     job = getattr(schedule.every(), day)
-    job.at(run_time).do(run_once, cfg)
+    job.at(run_time).do(run_once, cfg, args.test)
 
     logger.info(
         "定时模式启动：每周%s %s 自动执行。按 Ctrl+C 退出。",
@@ -222,7 +271,7 @@ def main() -> None:
     )
 
     # 立即执行一次，然后进入循环
-    run_once(cfg)
+    run_once(cfg, is_test=args.test)
 
     try:
         while True:
