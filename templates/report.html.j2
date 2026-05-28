@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ title }}</title>
+<style>
+  :root {
+    --bg: #08111f;
+    --bg-soft: #111f35;
+    --panel: rgba(12, 21, 37, 0.72);
+    --panel-strong: rgba(9, 17, 30, 0.9);
+    --line: rgba(143, 175, 214, 0.18);
+    --ink: #edf4ff;
+    --muted: #8fa5c4;
+    --accent: #61d0ff;
+    --accent-2: #7df0c8;
+    --accent-3: #ffc857;
+    --shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    color: var(--ink);
+    background:
+      radial-gradient(circle at 15% 20%, rgba(97, 208, 255, 0.2), transparent 24%),
+      radial-gradient(circle at 85% 12%, rgba(125, 240, 200, 0.14), transparent 20%),
+      radial-gradient(circle at 50% 100%, rgba(255, 200, 87, 0.08), transparent 28%),
+      linear-gradient(160deg, #050b14 0%, #08111f 45%, #0f1c31 100%);
+    font-family: "Noto Serif SC", "Source Han Serif SC", "Microsoft YaHei", serif;
+    line-height: 1.75;
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 32px 32px;
+    mask-image: linear-gradient(180deg, rgba(0,0,0,0.5), transparent 85%);
+  }
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .page {
+    width: min(1180px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 28px 0 72px;
+  }
+  .hero {
+    position: relative;
+    overflow: hidden;
+    padding: 34px;
+    border: 1px solid var(--line);
+    border-radius: 32px;
+    background:
+      linear-gradient(135deg, rgba(97, 208, 255, 0.1), transparent 42%),
+      linear-gradient(135deg, rgba(255, 200, 87, 0.1), transparent 65%),
+      var(--panel-strong);
+    box-shadow: var(--shadow);
+    isolation: isolate;
+  }
+  .hero::after {
+    content: "";
+    position: absolute;
+    width: 360px;
+    height: 360px;
+    right: -80px;
+    top: -110px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(97, 208, 255, 0.28), transparent 68%);
+    filter: blur(10px);
+    z-index: -1;
+  }
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(125, 240, 200, 0.22);
+    background: rgba(125, 240, 200, 0.08);
+    color: var(--accent-2);
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(280px, 0.8fr);
+    gap: 28px;
+    align-items: end;
+    margin-top: 22px;
+  }
+  h1 {
+    margin: 0;
+    font-size: clamp(2.6rem, 5vw, 4.8rem);
+    line-height: 0.98;
+    letter-spacing: 0.02em;
+  }
+  .hero-copy {
+    max-width: 760px;
+  }
+  .hero-side {
+    display: grid;
+    gap: 14px;
+  }
+  .hero-card {
+    padding: 18px 18px 16px;
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(14px);
+  }
+  .hero-label {
+    color: var(--muted);
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .hero-value {
+    margin-top: 8px;
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    line-height: 1;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .hero-sub {
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: 0.92rem;
+  }
+  .stack {
+    display: grid;
+    gap: 22px;
+    margin-top: 24px;
+  }
+  .section {
+    padding: 24px;
+    border: 1px solid var(--line);
+    border-radius: 28px;
+    background: var(--panel);
+    backdrop-filter: blur(18px);
+    box-shadow: var(--shadow);
+  }
+  .section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 18px;
+  }
+  h2 {
+    margin: 0;
+    font-size: 1.45rem;
+    color: var(--ink);
+  }
+  .section-note {
+    color: var(--muted);
+    font-size: 0.92rem;
+  }
+  .book-grid {
+    display: grid;
+    gap: 16px;
+  }
+  .book-card {
+    position: relative;
+    display: grid;
+    grid-template-columns: 120px minmax(0, 1fr);
+    gap: 20px;
+    padding: 20px;
+    border-radius: 24px;
+    border: 1px solid rgba(143, 175, 214, 0.14);
+    background:
+      linear-gradient(135deg, rgba(97, 208, 255, 0.06), transparent 48%),
+      rgba(255, 255, 255, 0.03);
+    transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+  }
+  .book-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(97, 208, 255, 0.32);
+    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.24);
+  }
+  .rank {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    font-size: 0.8rem;
+    color: rgba(237, 244, 255, 0.34);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .cover {
+    width: 120px;
+    height: 168px;
+    object-fit: cover;
+    border-radius: 18px;
+    background:
+      linear-gradient(145deg, rgba(97, 208, 255, 0.16), rgba(255, 255, 255, 0.04));
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .cover-fallback {
+    display: flex;
+    align-items: end;
+    justify-content: start;
+    padding: 14px;
+    color: rgba(237, 244, 255, 0.8);
+    font-size: 0.82rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .book-title {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    margin: 0;
+    font-size: 1.32rem;
+    line-height: 1.2;
+  }
+  .book-title a:hover,
+  .rss-title a:hover,
+  .mini-title a:hover {
+    color: var(--accent);
+  }
+  .subtitle {
+    margin-top: 6px;
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+  .meta-line {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+    margin-top: 12px;
+    color: var(--muted);
+    font-size: 0.94rem;
+  }
+  .meta-chip {
+    padding: 6px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(143, 175, 214, 0.16);
+    background: rgba(255, 255, 255, 0.03);
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: rgba(125, 240, 200, 0.12);
+    border: 1px solid rgba(125, 240, 200, 0.24);
+    color: var(--accent-2);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+  .summary,
+  .reason {
+    margin-top: 14px;
+    padding: 14px 16px;
+    border-radius: 18px;
+    border: 1px solid rgba(97, 208, 255, 0.14);
+    background: rgba(97, 208, 255, 0.06);
+    color: #dce9ff;
+    font-size: 0.95rem;
+  }
+  .list-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .mini-card, .rss-card {
+    padding: 16px 18px;
+    border-radius: 20px;
+    border: 1px solid rgba(143, 175, 214, 0.14);
+    background: rgba(255, 255, 255, 0.03);
+  }
+  .mini-title, .rss-title {
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.35;
+  }
+  .mini-meta, .rss-meta {
+    margin-top: 8px;
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+  .empty {
+    padding: 18px;
+    border-radius: 18px;
+    background: rgba(255,255,255,0.03);
+    color: var(--muted);
+  }
+  .closing {
+    position: relative;
+    overflow: hidden;
+    padding: 24px;
+    border-radius: 26px;
+    border: 1px solid rgba(125, 240, 200, 0.18);
+    background:
+      linear-gradient(135deg, rgba(125, 240, 200, 0.08), transparent 45%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02));
+  }
+  .closing-label {
+    color: var(--accent-2);
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .closing-text {
+    margin-top: 10px;
+    font-size: 1.1rem;
+    color: var(--ink);
+  }
+  footer {
+    padding-top: 10px;
+    color: var(--muted);
+    font-size: 0.88rem;
+    text-align: center;
+  }
+  #busuanzi_container_page_pv,
+  #busuanzi_container_site_pv {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(143, 175, 214, 0.14);
+    background: rgba(255, 255, 255, 0.03);
+    font-size: 0.82rem;
+  }
+  #busuanzi_value_page_pv,
+  #busuanzi_value_site_pv {
+    color: var(--accent);
+    font-weight: 700;
+  }
+  @media (max-width: 900px) {
+    .hero-grid,
+    .list-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 720px) {
+    .page {
+      width: min(100% - 20px, 1180px);
+      padding: 14px 0 40px;
+    }
+    .hero,
+    .section {
+      padding: 18px;
+      border-radius: 22px;
+    }
+    .book-card {
+      grid-template-columns: 1fr;
+      padding: 18px;
+    }
+    .cover {
+      width: 100%;
+      max-width: 180px;
+      height: 220px;
+    }
+    .rank {
+      position: static;
+      margin-bottom: 8px;
+      display: inline-block;
+    }
+  }
+</style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div class="eyebrow">Mystery Weekly Digest</div>
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <h1>{{ title }}</h1>
+        </div>
+        <div class="hero-side">
+          <div class="hero-card">
+            <div class="hero-label">本期新书</div>
+            <div class="hero-value">{{ selected_books|length }}</div>
+            <div class="hero-sub">生成时间：{{ generated_at }}</div>
+          </div>
+          <div class="hero-card">
+            <div class="hero-label">本期资讯</div>
+            <div class="hero-value">{{ selected_rss|length }}</div>
+            <div class="hero-sub">自动整理后的最终展示结果</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="stack">
+      <section class="section">
+        <div class="section-head">
+          <h2>本周精选新书</h2>
+          <div class="section-note">共 {{ selected_books|length }} 本</div>
+        </div>
+        {% if selected_books %}
+        <div class="book-grid">
+          {% for book in selected_books %}
+          <article class="book-card">
+            <div class="rank">No.{{ "%02d" % loop.index }}</div>
+            {% if book.cover_url %}
+            <img class="cover" src="{{ book.cover_url }}" alt="《{{ book.title }}》封面" loading="lazy" decoding="async">
+            {% else %}
+            <div class="cover cover-fallback">Mystery<br>Selection</div>
+            {% endif %}
+            <div>
+              <h3 class="book-title">
+                <a href="{{ book.url }}" target="_blank" rel="noopener noreferrer">{{ book.title }}</a>
+                {% if book.is_new %}<span class="badge">本周新增</span>{% endif %}
+              </h3>
+              {% if book.subtitle %}<div class="subtitle">{{ book.subtitle }}</div>{% endif %}
+              <div class="meta-line">
+                <span class="meta-chip">{{ book.author_text }}</span>
+                <span class="meta-chip">{{ book.press_text }}</span>
+                <span class="meta-chip">{{ book.year_text }}</span>
+                <span class="meta-chip">{{ book.rating_text }}</span>
+                <span class="meta-chip">综合分 {{ book.score_text }}</span>
+              </div>
+              {% if book.ai_recommend %}<div class="reason"><strong>AI 推荐：</strong>{{ book.ai_recommend }}</div>{% endif %}
+              {% if book.abstract %}<div class="summary">{{ book.abstract }}</div>{% endif %}
+            </div>
+          </article>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty">本周没有符合条件的新书。</div>
+        {% endif %}
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>本周资讯精选</h2>
+          <div class="section-note">共 {{ selected_rss|length }} 条</div>
+        </div>
+        {% if selected_rss %}
+        <div class="list-grid">
+          {% for entry in selected_rss %}
+          <article class="rss-card">
+            <div class="rss-title"><a href="{{ entry.url }}" target="_blank" rel="noopener noreferrer">{{ entry.title }}</a></div>
+            <div class="rss-meta">{{ entry.source_text }}{% if entry.published_text %} · {{ entry.published_text }}{% endif %}{% if entry.is_new %} · 本周新增{% endif %}</div>
+            {% if entry.ai_summary %}<div class="summary">{{ entry.ai_summary }}</div>{% endif %}
+          </article>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty">本周没有符合条件的资讯。</div>
+        {% endif %}
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>新书完整清单</h2>
+          <div class="section-note">前 {{ full_books|length }} 本</div>
+        </div>
+        {% if full_books %}
+        <div class="list-grid">
+          {% for book in full_books %}
+          <article class="mini-card">
+            <div class="mini-title"><a href="{{ book.url }}" target="_blank" rel="noopener noreferrer">{{ book.title }}</a></div>
+            <div class="mini-meta">{{ book.author_text }} · {{ book.press_text }} · {{ book.year_text }} · {{ book.rating_text }}{% if book.is_new %} · 本周新增{% endif %}</div>
+          </article>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty">没有可展示的新书。</div>
+        {% endif %}
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>资讯完整清单</h2>
+          <div class="section-note">前 {{ full_rss|length }} 条</div>
+        </div>
+        {% if full_rss %}
+        <div class="list-grid">
+          {% for entry in full_rss %}
+          <article class="rss-card">
+            <div class="rss-title"><a href="{{ entry.url }}" target="_blank" rel="noopener noreferrer">{{ entry.title }}</a></div>
+            <div class="rss-meta">{{ entry.source_text }}{% if entry.published_text %} · {{ entry.published_text }}{% endif %}{% if entry.is_new %} · 本周新增{% endif %}</div>
+            {% if entry.full_excerpt %}<div class="summary"><strong>精彩摘录：</strong>{{ entry.full_excerpt }}</div>{% endif %}
+          </article>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty">没有可展示的资讯。</div>
+        {% endif %}
+      </section>
+
+      {% if weekly_summary %}
+      <section class="closing">
+        <div class="closing-label">Weekly Note</div>
+        <div class="closing-text">{{ weekly_summary }}</div>
+      </section>
+      {% endif %}
+    </div>
+
+    <footer>
+      <div>本周报由推理资讯周报工具自动生成</div>
+      <div style="margin-top:8px;">
+        <span id="busuanzi_container_page_pv" style="display:none;">
+          本页访问 <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        <span id="busuanzi_container_site_pv" style="display:none;margin-left:12px;">
+          站点总访问 <span id="busuanzi_value_site_pv"></span> 次
+        </span>
+      </div>
+    </footer>
+  </main>
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</body>
+</html>

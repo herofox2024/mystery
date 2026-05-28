@@ -210,3 +210,135 @@ python -m pytest -q
 3. 如果历史提交里已经包含真实密钥，仅修改当前文件不够，还需要尽快轮换该密钥。
 4. 豆瓣抓取建议保持 `delay >= 2`。
 5. AI 精筛会产生 API 调用费用。
+
+## 本地网页控制台
+
+项目现在支持在本地电脑启动一个网页控制台，用来手动触发周报生成、查看运行状态、查看最近日志和打开最新 HTML 报告。后端只运行在本机，不需要部署到公网服务器。
+
+安装依赖后运行：
+
+```bash
+uvicorn web_app:app --host 127.0.0.1 --port 8000
+```
+
+然后在浏览器打开：
+
+```text
+http://127.0.0.1:8000
+```
+
+控制台提供：
+
+- `立即更新周报`：调用现有 `main.run_once` 执行正式抓取、AI 过滤和报告生成。
+- `测试运行`：使用测试状态文件和 `output_test/` 输出目录。
+- 运行状态：展示 `running / success / no_new_items / failed` 等状态，以及当前阶段。
+- 抓取统计：展示原始书籍、规则过滤后书籍、新增书籍、原始资讯、规则过滤后资讯、新增资讯。
+- 最近日志：读取 `data/runtime/weekly_report.log`。
+- 历史报告：列出 `output/` 下已有 HTML 报告。
+
+运行状态会写入：
+
+```text
+data/runtime/last_run.json
+```
+
+测试运行状态会写入：
+
+```text
+data/runtime/last_run_test.json
+```
+
+这些运行时文件已经被 `.gitignore` 忽略，不会上传到 GitHub。
+## 本地静态发布（P2）
+
+本地网页控制台现在支持把 `output/` 中最新周报同步成 GitHub Pages 静态站点文件。
+
+页面按钮说明：
+
+- `发布预检`：只校验最新 HTML 周报、归档路径、Git 状态，不写入 `index.html` 或 `reports/`。
+- `发布静态页`：把最新周报复制为站点首页 `index.html`，并同步到 `reports/` 历史归档。
+- `生成并发布`：先执行一次正式周报生成；只有生成了新的 HTML 周报时，才继续发布静态页。
+
+本地接口：
+
+```text
+GET  /api/publish/status
+GET  /api/publish/plan
+POST /api/publish?dry_run=true
+POST /api/publish
+POST /api/run-and-publish
+```
+
+发布状态会写入：
+
+```text
+data/runtime/last_publish.json
+```
+
+默认不会执行 `git push`，避免误提交远程仓库。接口保留了 `git_push=true` 参数用于后续自动提交和推送。
+
+## GitHub Pages 展示增强（P3）
+
+发布静态页时会额外生成面向 GitHub Pages 的展示文件：
+
+- `index.html`：站点首页，展示最新一期周报正文。
+- `reports/latest.html`：最新一期周报的稳定访问别名。
+- `reports/index.html`：历史周报归档页，展示最新一期摘要、历史列表和访问入口。
+- `reports/index.json`：机器可读索引，包含生成时间、最新一期、历史周报列表、文件大小、修改时间，以及可解析到的精选新书/资讯数量。
+- `reports/推理资讯周报_YYYY-MM-DD.html`：按日期归档的历史周报。
+
+P3 仍然保持 GitHub Pages 只做静态展示，不在公网运行爬虫、大模型调用或本地控制台接口。
+
+## 本地定时自动更新（P4）
+
+P4 新增 `scheduled_runner.py`，用于被 Windows 任务计划程序定时调用。它不依赖本地网页控制台是否启动，可以在后台完成生成和发布。
+
+手动验证一次：
+
+```bash
+python scheduled_runner.py --mode run-and-publish
+```
+
+只生成周报：
+
+```bash
+python scheduled_runner.py --mode run
+```
+
+只发布已有最新周报：
+
+```bash
+python scheduled_runner.py --mode publish
+```
+
+发布前预检，不写入站点文件：
+
+```bash
+python scheduled_runner.py --mode publish --dry-run
+```
+
+运行状态会写入：
+
+```text
+data/runtime/last_schedule.json
+```
+
+安装 Windows 任务计划程序任务：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/install_windows_task.ps1 -DayOfWeek Friday -At 18:00 -Mode run-and-publish
+```
+
+卸载任务：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/uninstall_windows_task.ps1
+```
+
+默认安装的任务不会执行 `git push`。如果确认要自动提交并推送静态页，可以在安装时加：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/install_windows_task.ps1 -DayOfWeek Friday -At 18:00 -Mode run-and-publish -GitPush
+```
+
+建议先不加 `-GitPush`，观察几次 `data/runtime/last_schedule.json` 和本地生成结果，确认稳定后再启用自动推送。

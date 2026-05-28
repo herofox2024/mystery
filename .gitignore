@@ -12,6 +12,7 @@ test_config.yaml
 # Runtime state
 data/*.json
 data/state_backup*.json
+data/runtime/
 
 # Generated reports and local test output
 output/

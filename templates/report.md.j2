@@ -1,0 +1,83 @@
+# {{ title }}
+
+> 生成时间：{{ generated_at }}
+
+---
+
+## 抓取统计
+
+| 项目 | 数量 |
+|------|------|
+| 豆瓣原始抓取 | {{ stats.raw_books }} |
+| 豆瓣规则过滤后 | {{ stats.filtered_books }} |
+| 豆瓣最终入选 | {{ stats.final_books }} |
+| RSS 原始抓取 | {{ stats.raw_rss }} |
+| RSS 规则过滤后 | {{ stats.filtered_rss }} |
+| RSS 最终入选 | {{ stats.final_rss }} |
+
+---
+
+## 本周精选新书（共 {{ selected_books|length }} 本）
+
+{% if selected_books %}
+{% for book in selected_books %}
+### {{ loop.index }}. {{ book.title }}
+{% if book.subtitle %}_{{ book.subtitle }}_{% endif %}
+
+| 字段 | 内容 |
+|------|------|
+| 作者 | {{ book.author_text }} |
+| 出版社 | {{ book.press_text }} |
+| 出版年 | {{ book.year_text }} |
+| 评分 | {{ book.rating_text }} |
+| 综合分 | {{ book.score_text }} |
+| 链接 | [豆瓣页面]({{ book.url }}) |
+| 状态 | {{ "本周新增" if book.is_new else "历史已见" }} |
+
+{% if book.ai_recommend %}**AI 推荐**：{{ book.ai_recommend }}
+{% endif %}
+{% if book.abstract %}> {{ book.abstract }}
+{% endif %}
+
+{% endfor %}
+{% else %}
+本周没有符合条件的新书。
+{% endif %}
+
+---
+
+## 本周资讯精选（共 {{ selected_rss|length }} 条）
+
+{% if selected_rss %}
+{% for entry in selected_rss %}
+- **[{{ entry.title }}]({{ entry.url }})** — {{ entry.source_text }}{% if entry.published_text %} · {{ entry.published_text }}{% endif %}{% if entry.is_new %} · 本周新增{% endif %}
+{% if entry.ai_summary %}  > {{ entry.ai_summary }}
+{% endif %}
+{% endfor %}
+{% else %}
+本周没有符合条件的资讯。
+{% endif %}
+
+---
+
+## 新书完整清单（前 {{ full_books|length }} 本）
+
+{% for book in full_books %}
+- **[{{ book.title }}]({{ book.url }})** · {{ book.year_text }} · 评分 {{ book.rating_text }}{% if book.is_new %} · 本周新增{% endif %}
+
+{% endfor %}
+
+---
+
+## 资讯完整清单（前 {{ full_rss|length }} 条）
+
+{% for entry in full_rss %}
+- **[{{ entry.title }}]({{ entry.url }})** — {{ entry.source_text }}{% if entry.published_text %} · {{ entry.published_text }}{% endif %}{% if entry.is_new %} · 本周新增{% endif %}
+{% if entry.full_excerpt %}  > 精彩摘录：{{ entry.full_excerpt }}
+{% endif %}
+
+{% endfor %}
+
+---
+
+_本周报由推理资讯周报工具自动生成_
