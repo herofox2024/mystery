@@ -1,23 +1,33 @@
 {
-  "generated_at": "2026-06-04T10:17:48",
+  "generated_at": "2026-06-11T13:46:02",
   "latest": {
-    "date": "2026-06-04",
-    "name": "推理资讯周报_2026-06-04.html",
-    "title": "推理资讯周报_2026-06-04",
+    "date": "2026-06-11",
+    "name": "推理资讯周报_2026-06-11.html",
+    "title": "推理资讯周报_2026-06-11",
     "url": "./latest.html",
-    "size": 13539,
-    "modified_at": "2026-06-04T10:17:48",
-    "selected_books": 1,
+    "size": 19705,
+    "modified_at": "2026-06-11T13:46:01",
+    "selected_books": 5,
     "selected_rss": 0
   },
   "reports": [
+    {
+      "date": "2026-06-11",
+      "name": "推理资讯周报_2026-06-11.html",
+      "title": "推理资讯周报_2026-06-11",
+      "url": "./推理资讯周报_2026-06-11.html",
+      "size": 19705,
+      "modified_at": "2026-06-11T13:46:01",
+      "selected_books": 5,
+      "selected_rss": 0
+    },
     {
       "date": "2026-06-04",
       "name": "推理资讯周报_2026-06-04.html",
       "title": "推理资讯周报_2026-06-04",
       "url": "./推理资讯周报_2026-06-04.html",
       "size": 13539,
-      "modified_at": "2026-06-04T10:17:48",
+      "modified_at": "2026-06-11T13:46:01",
       "selected_books": 1,
       "selected_rss": 0
     },
@@ -27,7 +37,7 @@
       "title": "推理资讯周报_2026-05-21",
       "url": "./推理资讯周报_2026-05-21.html",
       "size": 18512,
-      "modified_at": "2026-06-04T10:17:48",
+      "modified_at": "2026-06-11T13:46:01",
       "selected_books": 4,
       "selected_rss": 0
     },
@@ -37,7 +47,7 @@
       "title": "推理资讯周报_2026-05-07",
       "url": "./推理资讯周报_2026-05-07.html",
       "size": 19484,
-      "modified_at": "2026-06-04T10:17:48",
+      "modified_at": "2026-06-11T13:46:01",
       "selected_books": 5,
       "selected_rss": 0
     },
@@ -47,7 +57,7 @@
       "title": "推理资讯周报_2026-04-30",
       "url": "./推理资讯周报_2026-04-30.html",
       "size": 18331,
-      "modified_at": "2026-06-04T10:17:48",
+      "modified_at": "2026-06-11T13:46:01",
       "selected_books": 4,
       "selected_rss": 0
     },
@@ -57,7 +67,7 @@
       "title": "推理资讯周报_2026-04-23",
       "url": "./推理资讯周报_2026-04-23.html",
       "size": 18862,
-      "modified_at": "2026-06-04T10:17:48",
+      "modified_at": "2026-06-11T13:46:01",
       "selected_books": 2,
       "selected_rss": 4
     },
@@ -67,7 +77,7 @@
       "title": "推理资讯周报_2026-04-16",
       "url": "./推理资讯周报_2026-04-16.html",
       "size": 14405,
-      "modified_at": "2026-06-04T10:17:48",
+      "modified_at": "2026-06-11T13:46:01",
       "selected_books": 0,
       "selected_rss": 3
     },
@@ -77,7 +87,7 @@
       "title": "推理资讯周报_2026-04-09",
       "url": "./推理资讯周报_2026-04-09.html",
       "size": 13269,
-      "modified_at": "2026-06-04T10:17:48",
+      "modified_at": "2026-06-11T13:46:01",
       "selected_books": 0,
       "selected_rss": 2
     },
@@ -87,7 +97,7 @@
       "title": "推理资讯周报_2026-04-03",
       "url": "./推理资讯周报_2026-04-03.html",
       "size": 12391,
-      "modified_at": "2026-06-04T10:17:48",
+      "modified_at": "2026-06-11T13:46:01",
       "selected_books": 1,
       "selected_rss": 0
     },
@@ -97,7 +107,7 @@
       "title": "推理资讯周报_2026-04-02",
       "url": "./推理资讯周报_2026-04-02.html",
       "size": 18922,
-      "modified_at": "2026-06-04T10:17:48",
+      "modified_at": "2026-06-11T13:46:01",
       "selected_books": 2,
       "selected_rss": 4
     },
@@ -107,7 +117,7 @@
       "title": "推理资讯周报_2026-03-27",
       "url": "./推理资讯周报_2026-03-27.html",
       "size": 2013352,
-      "modified_at": "2026-06-04T10:17:48",
+      "modified_at": "2026-06-11T13:46:01",
       "selected_books": 7,
       "selected_rss": 2
     },
@@ -117,7 +127,7 @@
       "title": "推理资讯周报_2026-03-26",
       "url": "./推理资讯周报_2026-03-26.html",
       "size": 12733,
-      "modified_at": "2026-06-04T10:17:48",
+      "modified_at": "2026-06-11T13:46:01",
       "selected_books": null,
       "selected_rss": null
     },
@@ -127,7 +137,7 @@
       "title": "推理资讯周报_2026-03-23",
       "url": "./推理资讯周报_2026-03-23.html",
       "size": 165386,
-      "modified_at": "2026-06-04T10:17:48",
+      "modified_at": "2026-06-11T13:46:01",
       "selected_books": null,
       "selected_rss": null
     }
