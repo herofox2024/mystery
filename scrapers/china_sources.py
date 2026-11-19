@@ -63,15 +63,45 @@ def _parse_chinawriter_date(url: str) -> str:
     return dt.isoformat()
 
 
+# 豆瓣豆列的出版信息标签并不统一：老条目写「出版年」，新条目写「出版时间」，
+# 少数条目还会写成「出版日期」。只认「出版年」会把新条目整批丢掉。
+_PUB_LABEL_PATTERN = r"出版(?:年|时间|日期|月份|月)?"
+_PUB_DATE_RE = re.compile(
+    rf"{_PUB_LABEL_PATTERN}\s*[:：]?\s*"
+    r"((?:19|20)\d{2}(?:\s*[-./年]\s*\d{1,2}(?:\s*[-./月]\s*\d{1,2}\s*日?)?)?)"
+)
+
+
+def _extract_pub_date(text: str) -> str:
+    """从豆列摘要中提取出版日期，尽量保留到月（如 "2026-12"）。
+
+    返回空字符串表示没有识别到出版信息。
+    """
+    match = _PUB_DATE_RE.search(text or "")
+    if not match:
+        return ""
+    parts = re.match(r"((?:19|20)\d{2})(?:\s*[-./年]\s*(\d{1,2}))?", match.group(1))
+    if not parts:
+        return ""
+    year, month = parts.group(1), parts.group(2)
+    if month and 1 <= int(month) <= 12:
+        return f"{year}-{int(month):02d}"
+    return year
+
+
 def _extract_book_year(text: str) -> int | None:
-    match = re.search(r"出版年[:：]?\s*(20\d{2}|19\d{2})", text)
+    match = re.match(r"((?:19|20)\d{2})", _extract_pub_date(text))
     if not match:
         return None
     return int(match.group(1))
 
 
 def _extract_field_list(text: str, label: str) -> list[str]:
-    match = re.search(rf"{label}[:：]?\s*([^；]+?)(?=\s*(?:作者|出版社|出版年)[:：]|$)", text)
+    # 终止符必须与 _PUB_LABEL_PATTERN 保持一致，否则「出版时间」会被吞进出版社字段。
+    match = re.search(
+        rf"{label}[:：]?\s*([^；]+?)(?=\s*(?:作者|出版社|{_PUB_LABEL_PATTERN})[:：]|$)",
+        text,
+    )
     if not match:
         return []
     value = _normalize_text(match.group(1))
@@ -134,6 +164,8 @@ def _fetch_douban_doulist_books(cfg: dict, cutoff: datetime, timeout: int, targe
             if not _is_recent(published, cutoff):
                 continue
 
+            pub_date = _extract_pub_date(abstract)
+
             if target_year is not None:
                 book_year = _extract_book_year(abstract)
                 if book_year != target_year:
@@ -150,7 +182,9 @@ def _fetch_douban_doulist_books(cfg: dict, cutoff: datetime, timeout: int, targe
                     "subtitle": "",
                     "author": author,
                     "press": press,
-                    "year": str(book_year) if book_year is not None else "",
+                    # 保留完整出版年月（如 "2026-12"），不要压成 4 位年份，
+                    # 否则后续无法区分「本月新书」和「几个月前出版的补录书」。
+                    "year": pub_date,
                     "rating": 0,
                     "rating_count": 0,
                     "cover_url": cover_url,

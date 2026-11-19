@@ -221,6 +221,29 @@ def _extract_year(value: Any) -> int | None:
     return int(match.group(1))
 
 
+def _normalize_year_label(value: Any) -> str:
+    """把出版信息归一成 `YYYY-MM` 或 `YYYY`，尽量保留月份。
+
+    豆瓣和豆列给出的出版信息格式并不统一（`2026-11`、`2026-9`、`2026/3`、
+    `2026年5月`、只有 `2026` 等）。只保留 4 位年份会让「本月出版」和
+    「几个月前出版」在报告里完全无法区分，所以这里统一保留到月。
+    识别不出年份时返回空字符串。
+    """
+    text = str(value or "").strip()
+    if not text:
+        return ""
+    match = re.search(
+        r"(20\d{2}|19\d{2})(?:\s*[-./年]\s*(\d{1,2}))?",
+        text,
+    )
+    if not match:
+        return ""
+    year, month = match.group(1), match.group(2)
+    if month and 1 <= int(month) <= 12:
+        return f"{year}-{int(month):02d}"
+    return year
+
+
 def _parse_iso_datetime(value: str) -> datetime | None:
     if not value:
         return None
@@ -277,7 +300,8 @@ def filter_books_by_rules(books: list[dict], rules_cfg: dict[str, Any]) -> list[
                 continue
 
         normalized = dict(book)
-        normalized["year"] = str(year)
+        # 保留完整出版年月（YYYY-MM），只丢失月份会让后续无法判断「本月新书」。
+        normalized["year"] = _normalize_year_label(book.get("year")) or str(year)
         filtered.append(normalized)
 
     return filtered

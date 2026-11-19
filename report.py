@@ -50,11 +50,28 @@ def _format_rating(item: dict[str, Any]) -> str:
     return f"{rating:.1f}"
 
 
+_YEAR_LABEL_RE = re.compile(r"^((?:19|20)\d{2})(?:-(\d{1,2}))?$")
+
+
+def _format_year_label(value: Any) -> str:
+    """把 `2026-11` 渲染成「2026年11月」，只有年份时渲染成「2026年」。"""
+    text = str(value or "").strip()
+    if not text:
+        return "未知年份"
+    match = _YEAR_LABEL_RE.match(text)
+    if not match:
+        return text
+    year, month = match.group(1), match.group(2)
+    if month:
+        return f"{year}年{int(month)}月"
+    return f"{year}年"
+
+
 def _prepare_book(book: dict[str, Any]) -> dict[str, Any]:
     normalized = dict(book)
     normalized["author_text"] = _join_list(book.get("author"))
     normalized["press_text"] = _join_list(book.get("press"))
-    normalized["year_text"] = str(book.get("year") or "未知年份")
+    normalized["year_text"] = _format_year_label(book.get("year"))
     normalized["rating_text"] = _format_rating(book)
     normalized["score_text"] = f"{float(book.get('score') or 0):.2f}" if "score" in book else "—"
     normalized["url"] = str(book.get("url") or "#")
