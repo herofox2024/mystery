@@ -122,6 +122,17 @@ def _fetch_douban_doulist_books(cfg: dict, cutoff: datetime, timeout: int, targe
     name = str(cfg.get("name") or "豆瓣豆列").strip()
     base_url = str(cfg.get("url") or "").strip()
     max_pages = max(int(cfg.get("max_pages", 1)), 1)
+    # 「即将（待）出版」类豆列的 `time` 字段是**收录时间**，不是出版时间。
+    # 一本 12 月出版的书可能在 8 月就被收录，用资讯的 21 天窗口会把它整批筛掉。
+    # 因此豆列单独使用 book_days 窗口，并允许 0 表示不做收录时间限制。
+    book_days = cfg.get("book_days", None)
+    if book_days is not None:
+        book_days = int(book_days)
+        cutoff = (
+            datetime.now(timezone.utc) - timedelta(days=book_days)
+            if book_days > 0
+            else datetime.min.replace(tzinfo=timezone.utc)
+        )
     if not base_url:
         return []
 
@@ -258,12 +269,18 @@ def fetch_china_book_entries(cfg: dict) -> list[dict]:
     cutoff = datetime.now(timezone.utc) - timedelta(days=days)
     target_year = cfg.get("target_year")
     target_year = int(target_year) if str(target_year or "").strip() else None
+    # 豆列默认放宽到 days 的 4 倍（且至少 90 天），并放在 1 年以内。
+    # 豆列的收录时间普遍早于出版时间，「待出版」条目需要更长的窗口。
+    book_days = cfg.get("book_days")
+    book_days = max(int(book_days), 0) if book_days is not None else max(days * 4, 90)
 
     all_books: list[dict] = []
     seen_ids: set[str] = set()
 
     for item in cfg.get("douban_doulists", []):
-        for book in _fetch_douban_doulist_books(item or {}, cutoff, timeout, target_year):
+        doulist_cfg = dict(item or {})
+        doulist_cfg.setdefault("book_days", book_days)
+        for book in _fetch_douban_doulist_books(doulist_cfg, cutoff, timeout, target_year):
             if book["id"] in seen_ids:
                 continue
             seen_ids.add(book["id"])

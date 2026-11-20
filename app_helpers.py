@@ -46,6 +46,8 @@ DEFAULT_CONFIG: dict[str, Any] = {
         "min_rating_count": 20,
         "exact_target_year_only": True,
         "recent_months_window": 12,
+        "freshness_bonus_max": 24,
+        "freshness_window_months": 6,
         "exclude_keywords": ["研究", "评论", "论文", "教材", "漫画", "绘本", "纪实", "案例"],
         "rss_include_keywords": [
             "推理",
@@ -329,7 +331,48 @@ def filter_rss_by_rules(entries: list[dict], rules_cfg: dict[str, Any]) -> list[
     return filtered
 
 
-def score_books(books: list[dict], target_year: int) -> list[dict]:
+def _months_since(pub_year: int, pub_month: int, now: datetime) -> int:
+    """出版时间距今天有多少个月（不足一个月按 0 计，未来出版返回负数）。"""
+    return (now.year - pub_year) * 12 + (now.month - pub_month)
+
+
+def _freshness_bonus(year_label: Any, rules_cfg: dict[str, Any], now: datetime) -> float:
+    """按出版年月计算新鲜度加分。
+
+    旧的打分公式里 `max(0, 8 - abs(target_year - year) * 4)` 对所有同年度图书
+    恒等于 8 分，等于完全没有区分「本月出版」和「半年前出版」。这里改成按
+    「距今月数」线性衰减，让当月新获得最高加分。
+
+    只识别到年份、没有月份的条目无法判断新旧，返回 0（退回到原有年份项），
+    避免把「2026 年某月」一律当成 1 月而误伤。
+    """
+    label = _normalize_year_label(year_label)
+    if not label or "-" not in label:
+        return 0.0
+    parts = label.split("-")
+    pub_year = int(parts[0])
+    pub_month = int(parts[1])
+
+    max_bonus = float(rules_cfg.get("freshness_bonus_max", 24))
+    window = int(rules_cfg.get("freshness_window_months", 6))
+    if max_bonus <= 0 or window <= 0:
+        return 0.0
+
+    months = _months_since(pub_year, pub_month, now)
+    if months <= 0:
+        # 当月以及尚未上市（预售/待出版）的条目都给满额加分，这正是周报最想推的。
+        return max_bonus
+    if months >= window:
+        return 0.0
+    return round(max_bonus * (window - months) / window, 2)
+
+
+def score_books(books: list[dict], target_year: int, rules_cfg: dict[str, Any] | None = None) -> list[dict]:
+    # 显式区分「没传规则」和「传了空规则」：前者保持旧行为不计新鲜度加分，
+    # 避免既有调用方的排序结果突然变化。
+    apply_freshness = rules_cfg is not None
+    rules_cfg = rules_cfg or {}
+    now = datetime.now()
     scored: list[dict] = []
     for book in books:
         source = str(book.get("source") or "")
@@ -342,13 +385,19 @@ def score_books(books: list[dict], target_year: int) -> list[dict]:
         score += rating * 12
         score += min(math.log10(rating_count + 1) * 10, 35)
         score += max(0, 8 - abs(target_year - year) * 4)
+        freshness = _freshness_bonus(book.get("year"), rules_cfg, now) if apply_freshness else 0.0
+        score += freshness
 
         normalized = dict(book)
         normalized["score"] = round(score, 2)
-        # 排序优先级：
-        # 1. 已上市且有评分的常规豆瓣条目
-        # 2. 中文辅助源里的 2026 待出版/无评分条目
-        normalized["sort_bucket"] = 0 if is_china_book and rating_count <= 0 else 1
+        normalized["freshness_score"] = freshness
+        # 排序优先级（两段式）：
+        # 1. 中文辅助源里的「待出版 / 暂无评分」条目排在最前 —— 这类条目正是
+        #    「即将上市的新书」，周报最需要它们出现在精选位；
+        # 2. 其余已上市常规豆瓣条目按综合分排序。
+        # 注意：排序 key 首元素是 -sort_bucket 且 reverse=True，属于降序排序，
+        # 因此 bucket 越小越靠前：待出版条目取 0，常规条目取 1。
+        normalized["sort_bucket"] = 0 if (is_china_book and rating_count <= 0) else 1
         scored.append(normalized)
 
     scored.sort(

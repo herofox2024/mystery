@@ -266,7 +266,7 @@ def _fetch_source_items(cfg: dict, rules_cfg: dict) -> tuple[list[dict], list[di
 
 def _apply_rule_filters(books: list[dict], rss_entries: list[dict], rules_cfg: dict, stats: dict) -> tuple[list[dict], list[dict]]:
     target_year = int(rules_cfg["target_year"])
-    filtered_books = score_books(filter_books_by_rules(books, rules_cfg), target_year)
+    filtered_books = score_books(filter_books_by_rules(books, rules_cfg), target_year, rules_cfg)
     filtered_rss = score_rss(filter_rss_by_rules(rss_entries, rules_cfg))
 
     stats["filtered_books"] = len(filtered_books)
@@ -304,7 +304,7 @@ def _apply_ai_filters(books: list[dict], rss_entries: list[dict], ai_cfg: dict, 
 
 def _mark_final_items(books: list[dict], rss_entries: list[dict], rules_cfg: dict, state: dict, stats: dict) -> tuple[list[dict], list[dict]]:
     target_year = int(rules_cfg["target_year"])
-    marked_books = mark_new_items(score_books(books, target_year), state, "books")
+    marked_books = mark_new_items(score_books(books, target_year, rules_cfg), state, "books")
     marked_rss = mark_new_items(score_rss(rss_entries), state, "rss")
 
     final_books = [item for item in marked_books if item.get("is_new")]

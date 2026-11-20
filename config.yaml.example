@@ -18,15 +18,27 @@ douban:
 
 rss:
   # 当前 rss_feeds.py 只支持标准 RSS。
-  # 中文推理更适合接入“豆瓣豆列 / 中国作家网 / 出版社动态”等页面抓取器，
-  # 因此这里先清空，避免继续依赖国外泛图书 RSS。
-  # 第 2 步新增中文抓取器后，再把中文源接入主流程。
-  feeds: []
+  # 4 个新浪读书源（lit/sal/soc/his.xml）已废弃：实测最新条目停留在 2005~2008 年，
+  # 加上 days 窗口后永远抓不到内容，不要再加回来。
+  # 中文推理更适合接入「豆瓣豆列 / 中国作家网 / 出版社动态」等页面抓取器，
+  # 这部分由下面的 china_sources 承担；国内推理类 RSS 目前普遍返回 403 或超时。
+  feeds:
+    - name: "CrimeReads"
+      url: "https://crimereads.com/feed/"
+      allow_html_fallback: false
+    - name: "Mystery Tribune"
+      url: "https://www.mysterytribune.com/feed/"
+      allow_html_fallback: false
   days: 7
 
 china_sources:
   enabled: true
+  # days 只用于资讯类来源（中国作家网），豆列不看这个值。
   days: 21
+  # 豆列的时间窗口单独配置：豆列的 time 字段是「收录时间」而非出版时间，
+  # 一本 12 月出版的书可能在 8 月就被收录，用 21 天窗口会把待出版新书整批筛掉。
+  # 设为 0 表示不限制收录时间（只受 target_year 约束）。
+  book_days: 180
   timeout: 20
   target_year: 2026
   # 默认不再启用“推理2025”这类历史豆列，避免混入 2025 出版物。
@@ -96,6 +108,11 @@ filter_rules:
   min_rating_count: 20
   exact_target_year_only: true
   recent_months_window: 12
+  # 新鲜度加分：出版越近加分越高，让「本月新书」能进精选位。
+  # 当月及未上市（预售/待出版）拿满额 24 分，6 个月前衰减到 0。
+  # 设为 0 可关闭该加分，退回只看评分与评价人数。
+  freshness_bonus_max: 24
+  freshness_window_months: 6
   exclude_keywords:
     - 研究
     - 评论
@@ -178,6 +195,25 @@ filter_rules:
     - history
     - essay
     - poem
+    # 接入英文源后出现的非书讯内容：游戏、播客、影视改编、漫画等
+    # 虽然带 mystery / crime 关键词，但不属于新书资讯。
+    - video game
+    - video games
+    - game
+    - gaming
+    - podcast
+    - podcasts
+    - tv series
+    - television
+    - streaming
+    - film adaptation
+    - movie
+    - movies
+    - screenplay
+    - comic
+    - comics
+    - graphic novel
+    - graphic novels
     - 习近平
     - 脱贫攻坚
     - 互联网大会
